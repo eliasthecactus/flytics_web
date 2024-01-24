@@ -15,6 +15,7 @@ import { NgModel } from '@angular/forms';
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
+userData: any;
 
   constructor(private apiService: ApiService) {}
 
