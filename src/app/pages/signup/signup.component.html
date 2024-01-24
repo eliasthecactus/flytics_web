@@ -24,20 +24,20 @@
                 <label class="label">
                     <span class="text-base label-text">Email</span>
                 </label>
-                <input type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" />
+                <input type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" autocomplete="username"/>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Password</span>
                 </label>
-                <input type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" />
+                <input type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" autocomplete="new-password"/>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Confirm Password</span>
                 </label>
                 <input type="password" placeholder="Confirm Password"
-                    class="w-full input input-bordered input-primary" />
+                    class="w-full input input-bordered input-primary" autocomplete="new-password" />
             </div>
             <br>
             <div class="flex items-center space-x-2">
@@ -49,7 +49,7 @@
             </div>
             <br>
             <div class="flex w-full items-center justify-between">
-                <a (click)="signup()" class="btn btn-primary">Login</a>
+                <a (click)="signup()" class="btn btn-primary"><span class="loading loading-spinner"></span>Login</a>
                 <div class="flex">
                     <p>Already a member?</p>
                     <a routerLink="/login" class="text-primary px-2">Login</a>
