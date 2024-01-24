@@ -1,0 +1,71 @@
+<div class="flex flex-col w-screen min-h-screen items-center justify-center">
+    <div class="flex w-full justify-between p-3 items-center">
+
+        <h1 class="text-2xl font-semibold">Account</h1>
+        <div class="flex space-x-2">
+            <a (click)="cancelInformation()" class="btn">Cancel</a>
+            <a (click)="saveInformation()" class="btn btn-primary btn-disabled"><i
+                    class="fa-regular fa-floppy-disk"></i> Save</a>
+        </div>
+    </div>
+    <div class="flex flex-col items-center w-10/12 max-w-72 flex-grow">
+
+
+        <label for="profilePicture">
+            <div class="avatar tooltip cursor-pointer placeholder" data-tip="Click to change">
+                <div *ngIf="hasProfilePicture" class="w-24 rounded-full">
+                    <img [src]="profilePictureUrl" />
+                </div>
+                <div *ngIf="!hasProfilePicture" class="bg-neutral text-neutral-content rounded-full w-24">
+                    <span class="text-3xl">D</span>
+                  </div>
+            </div>
+        </label>
+        <input type="file" id="profilePicture" style="display:none" accept="image/*"
+            (change)="changeProfilePicture($event)" />
+
+
+
+        <div class="w-full">
+            <label class="label">
+                <span class="text-base label-text">First Name</span>
+            </label>
+            <input type="text" placeholder="John" class="w-full input input-bordered input-primary" />
+        </div>
+        <div class="w-full">
+            <label class="label">
+                <span class="text-base label-text">Last Name</span>
+            </label>
+            <input type="text" placeholder="Doe" class="w-full input input-bordered input-primary" />
+        </div>
+        <div class="w-full">
+            <label class="label">
+                <span class="text-base label-text">Username</span>
+            </label>
+            <input type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+        </div>
+        <div class="w-full">
+            <label class="label">
+                <span class="text-base label-text">Email</span>
+            </label>
+            <input type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" />
+        </div>
+        <br>
+        <button class="btn btn-error m-5 w-full btn-outline" onclick="deleteModal.showModal()">Delete Account</button>
+        <dialog id="deleteModal" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">Delete Account!</h3>
+                <p class="py-4">Are you sure. You won't be able to login after the account has been deleted!</p>
+                <div class="modal-action">
+                    <div class="flex items-center space-x-3">
+                        <button (click)="deleteAccount()" class="btn btn-error">YES, DELETE!</button>
+                        <form method="dialog">
+                            <button class="btn">Close</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </dialog>
+    </div>
+</div>

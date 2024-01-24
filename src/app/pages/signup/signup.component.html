@@ -1,0 +1,62 @@
+<div class="flex w-full min-h-screen justify-center items-center">
+    <div class="flex w-full h-full flex-col items-center justify-center py-10">
+        <form class="space-y-2 w-10/12 max-w-96">
+            <h1 class="w-full text-2xl font-semibold">Sign up</h1>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">First Name</span>
+                </label>
+                <input type="text" placeholder="John" class="w-full input input-bordered input-primary" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Last Name</span>
+                </label>
+                <input type="text" placeholder="Doe" class="w-full input input-bordered input-primary" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Username</span>
+                </label>
+                <input type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Email</span>
+                </label>
+                <input type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Password</span>
+                </label>
+                <input type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Confirm Password</span>
+                </label>
+                <input type="password" placeholder="Confirm Password"
+                    class="w-full input input-bordered input-primary" />
+            </div>
+            <br>
+            <div class="flex items-center space-x-2">
+                <input id="tosbox" type="checkbox" class="checkbox" />
+                <label for="tosbox" class="text-gray-600 cursor-pointer">I accept the <span
+                        class="text-gray-600 hover:underline hover:text-primary"><a href="" target="_blank">Terms of
+                            Use</a></span> & <span class="text-gray-600 hover:underline hover:text-primary"><a href=""
+                            target="_blank">Privacy Policy</a></span></label>
+            </div>
+            <br>
+            <div class="flex w-full items-center justify-between">
+                <a (click)="signup()" class="btn btn-primary">Login</a>
+                <div class="flex">
+                    <p>Already a member?</p>
+                    <a routerLink="/login" class="text-primary px-2">Login</a>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
