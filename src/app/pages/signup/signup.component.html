@@ -6,50 +6,54 @@
                 <label class="label">
                     <span class="text-base label-text">First Name</span>
                 </label>
-                <input type="text" placeholder="John" class="w-full input input-bordered input-primary" />
+                <input [(ngModel)]="userData.first_name" name="first_name" id="registerFirstName" type="text" placeholder="John" class="w-full input input-bordered input-primary" />
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Last Name</span>
                 </label>
-                <input type="text" placeholder="Doe" class="w-full input input-bordered input-primary" />
+                <input [(ngModel)]="userData.last_name" name="last_name" id="registerLastName" type="text" placeholder="Doe" class="w-full input input-bordered input-primary" />
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Username</span>
                 </label>
-                <input type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+                <input [(ngModel)]="userData.username" name="username" id="registerUsername" type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+                <p class="text-xs mt-2 text-red-500">{{userData.username}} not available</p>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Email</span>
                 </label>
-                <input type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" autocomplete="username"/>
+                <input [(ngModel)]="userData.email" name="email" id="registerEmail" type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" autocomplete="username"/>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Password</span>
+                    <div class="tooltip tooltip-left" data-tip="The password should be 8 characters long, at least contain one capital letter, one lowercase letter, and one special character">
+                        <i class="fa-solid fa-circle-info text-sm text-gray-600"></i>
+                      </div>
                 </label>
-                <input type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" autocomplete="new-password"/>
+                <input [(ngModel)]="userData.password" name="password" id="registerPassword" type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" autocomplete="new-password"/>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Confirm Password</span>
                 </label>
-                <input type="password" placeholder="Confirm Password"
-                    class="w-full input input-bordered input-primary" autocomplete="new-password" />
+                <input [(ngModel)]="userData.confirmPassword" name="confirmPassword" id="registerConfirmPassword" type="password" placeholder="Confirm Password" class="w-full input input-bordered input-primary" autocomplete="new-password" />
             </div>
             <br>
             <div class="flex items-center space-x-2">
-                <input id="tosbox" type="checkbox" class="checkbox" />
-                <label for="tosbox" class="text-gray-600 cursor-pointer">I accept the <span
-                        class="text-gray-600 hover:underline hover:text-primary"><a href="" target="_blank">Terms of
-                            Use</a></span> & <span class="text-gray-600 hover:underline hover:text-primary"><a href=""
-                            target="_blank">Privacy Policy</a></span></label>
+                <input id="registerAcceptToU" type="checkbox" class="checkbox" />
+                <label for="registerAcceptToU" class="text-gray-600 text-xs cursor-pointer">I accept the <span
+                        class="text-gray-600 hover:underline hover:text-primary"><a routerLink="/tou" target="_blank">Terms of
+                            Use</a></span>, the <span class="text-gray-600 hover:underline hover:text-primary"><a routerLink="/privacypolicy"
+                            target="_blank">Privacy Policy</a></span> and the <span class="text-gray-600 hover:underline hover:text-primary"><a routerLink="/cookiepolicy"
+                                target="_blank">Cookie Policy</a></span></label>
             </div>
             <br>
             <div class="flex w-full items-center justify-between">
-                <a (click)="signup()" class="btn btn-primary"><span class="loading loading-spinner"></span>Login</a>
+                <a (click)="signup()" id="signupButton" class="btn btn-primary disabled"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Sign up</a>
                 <div class="flex">
                     <p>Already a member?</p>
                     <a routerLink="/login" class="text-primary px-2">Login</a>
@@ -59,4 +63,11 @@
 
         </form>
     </div>
+</div>
+
+<div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
+    <div role="alert" class="alert alert-{{ alertService.alertLevel }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>{{ alertService.alertMessage }}</span>
+      </div>
 </div>

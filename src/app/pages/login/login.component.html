@@ -6,18 +6,18 @@
                 <label class="label">
                     <span class="text-base label-text">Email</span>
                 </label>
-                <input type="text" placeholder="Email Address" class="w-full input input-bordered input-primary" autocomplete="username"/>
+                <input [(ngModel)]="userData.email" name="email" type="text" placeholder="Email Address" class="w-full input input-bordered input-primary" autocomplete="username"/>
             </div>
             <div>
                 <label class="label">
                     <span class="text-base label-text">Password</span>
                 </label>
-                <input type="password" placeholder="Enter Password"
+                <input [(ngModel)]="userData.password" name="password" type="password" placeholder="Enter Password"
                     class="w-full input input-bordered input-primary" autocomplete="current-password"/>
             </div>
             <a href="#" class="text-xs text-gray-600 hover:underline hover:text-primary">Forget Password?</a>
             <div class="flex w-full items-center justify-between">
-                <a (click)="login()" class="btn btn-primary">Login</a>
+                <a (click)="login()" id="loginButton" class="btn btn-primary"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Login</a>
                 <div class="flex">
                     <p>New to Flytics?</p>
                     <a routerLink="/signup" class="text-primary px-2">Join now</a>
@@ -30,3 +30,9 @@
 
 </div>
 
+<div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
+    <div role="alert" class="alert alert-{{ alertService.alertLevel }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>{{ alertService.alertMessage}}</span>
+      </div>
+</div>
