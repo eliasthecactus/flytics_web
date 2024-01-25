@@ -11,6 +11,7 @@ import { SettingsComponent } from './pages/settings/settings.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { CookiePolicyComponent } from './pages/cookie-policy/cookie-policy.component';
+import { PasswordResetComponent } from './pages/password-reset/password-reset.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -25,5 +26,6 @@ export const routes: Routes = [
     { path: 'tou', component: TermsOfUseComponent },
     { path: 'privacypolicy', component: PrivacyPolicyComponent },
     { path: 'cookiepolicy', component: CookiePolicyComponent },
+    { path: 'passwordreset', component: PasswordResetComponent },
     { path: "**", redirectTo: "home" },
 ];

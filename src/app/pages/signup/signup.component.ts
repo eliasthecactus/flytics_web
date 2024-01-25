@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
@@ -28,9 +28,38 @@ export class SignupComponent {
     confirmPassword: ''
   };
 
-  constructor(private apiService: ApiService, public alertService: AlertService) {}
+  constructor(private apiService: ApiService, public alertService: AlertService, private router: Router) {}
+
+  checkAvailability(username: string) {
+    var available = document.getElementById('usernameAvailable')
+    var notAvailable = document.getElementById('usernameNotAvailable')
+    if (username.length > 4) {
+      this.apiService.availabilityCheck(username).subscribe(
+        (response) => {
+          if (response.code == 0) {
+            available?.classList.remove('hidden')
+            notAvailable?.classList.add('hidden')
+            console.log("check")
+          } else if (response.code == 10){
+            available?.classList.add('hidden')
+            notAvailable?.classList.remove('hidden')
+          } else {
+            console.log("There was an error")
+          }
+          // document.getElementById("usernameAvailability")
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    } else {
+      available?.classList.add('hidden')
+      notAvailable?.classList.add('hidden')
+    }
+  }
 
   signup() {
+
     var accept_tou = (document.getElementById('registerAcceptToU') as HTMLInputElement).checked;
 
     if (!accept_tou) {
@@ -72,8 +101,6 @@ export class SignupComponent {
       this.alertService.show("error", "Invalid email address")
       return
     }
-
-    
     
     
     this.loadingSpinner = true;
@@ -81,13 +108,12 @@ export class SignupComponent {
 
     this.apiService.signup(this.userData).subscribe(
       (response) => {
-        console.log(response);
+        // console.log(response);
         this.loadingSpinner = false;
-        document.getElementById('signupButton')?.classList.remove("btn-disabled")
-        this.alertService.show("success", "Sign up was successfull")
+        this.router.navigate(['/login']);
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
         this.loadingSpinner = false;
         document.getElementById('signupButton')?.classList.remove("btn-disabled")
         this.alertService.show("error", "There was an error")

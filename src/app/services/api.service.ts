@@ -13,7 +13,15 @@ export class ApiService {
   signup(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/api/user/register`, userData);
   }
-  
+
+  login(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/user/login`, userData);
+  }
+
+  availabilityCheck(username: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/user/availability?username=`+username);
+  }
+
   ping() {
     return this.http.get(this.apiUrl+"/api/ping");
   }

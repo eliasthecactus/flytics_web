@@ -15,7 +15,7 @@
                 <input [(ngModel)]="userData.password" name="password" type="password" placeholder="Enter Password"
                     class="w-full input input-bordered input-primary" autocomplete="current-password"/>
             </div>
-            <a href="#" class="text-xs text-gray-600 hover:underline hover:text-primary">Forget Password?</a>
+            <a routerLink="/passwordreset" class="text-xs text-gray-600 hover:underline hover:text-primary">Forget Password?</a>
             <div class="flex w-full items-center justify-between">
                 <a (click)="login()" id="loginButton" class="btn btn-primary"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Login</a>
                 <div class="flex">

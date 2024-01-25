@@ -18,8 +18,9 @@
                 <label class="label">
                     <span class="text-base label-text">Username</span>
                 </label>
-                <input [(ngModel)]="userData.username" name="username" id="registerUsername" type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
-                <p class="text-xs mt-2 text-red-500">{{userData.username}} not available</p>
+                <input (ngModelChange)="checkAvailability($event)" [(ngModel)]="userData.username" name="username" id="registerUsername" type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+                <p id="usernameAvailable" class="hidden text-xs mt-2 text-green-500">{{userData.username}} is available</p>
+                <p id="usernameNotAvailable" class="hidden text-xs mt-2 text-red-500">{{userData.username}} is not available</p>
             </div>
             <div>
                 <label class="label">
@@ -71,3 +72,4 @@
         <span>{{ alertService.alertMessage }}</span>
       </div>
 </div>
+
