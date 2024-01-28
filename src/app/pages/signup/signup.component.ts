@@ -109,8 +109,12 @@ export class SignupComponent {
     this.apiService.signup(this.userData).subscribe(
       (response) => {
         // console.log(response);
-        this.loadingSpinner = false;
-        this.router.navigate(['/login']);
+        if (response.code == 0) {
+          this.loadingSpinner = false;
+          this.router.navigate(['/login']);
+        } else {
+          this.alertService.show("error", response.message);
+        }
       },
       (error) => {
         // console.log(error);

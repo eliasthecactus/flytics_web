@@ -44,14 +44,9 @@ export class LoginComponent {
         if (response.code == 0) {
           this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
           this.router.navigate(['/dashboard']);
-        } else if (response.code == 10) {
-          this.alertService.show("error", "Your account is disabled. Please contact us to enable your account")
-        } else if (response.code == 20) {
-          this.alertService.show("error", "Please activate your account if you wanna use it. A new activation link was sent to your account.")
-        } else if (response.code == 30) {
-          this.alertService.show("error", "Invalid credentials")
         } else {
-          this.alertService.show("error", "Unknown error")
+          console.log(response)
+          this.alertService.show("error", response.message)
         }
       },
       (error) => {

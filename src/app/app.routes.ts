@@ -12,6 +12,9 @@ import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { CookiePolicyComponent } from './pages/cookie-policy/cookie-policy.component';
 import { PasswordResetComponent } from './pages/password-reset/password-reset.component';
+import { OverviewComponent } from './pages/overview/overview.component';
+import { StatsComponent } from './pages/stats/stats.component';
+import { FeedComponent } from './pages/feed/feed.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -19,7 +22,12 @@ export const routes: Routes = [
     { path: 'contact', component: ContactComponent },
     { path: 'login', component: LoginComponent },
     { path: 'signup', component: SignupComponent },
-    { path: 'dashboard', component: DashboardComponent },
+    { path: 'dashboard', component: DashboardComponent, children: [
+        {path: '', redirectTo: 'overview', pathMatch: 'full'},
+        {path: 'overview', component: OverviewComponent},
+        {path: 'stats', component: StatsComponent},
+        {path: 'feed', component: FeedComponent}
+    ]},
     { path: 'add', component: AddFlightComponent },
     // { path: 'settings', component: SettingsComponent },
     { path: 'account', component: AccountComponent },

@@ -8,14 +8,14 @@ export class AlertService {
   showAlert: boolean = false;
   alertLevel: string = 'error';
 
-  show(level: string, message: string) {
+  show(level: string, message: string, timeout: number = 3000) {
     this.alertMessage = message;
     this.alertLevel = level;
     this.showAlert = true;
 
     setTimeout(() => {
       this.showAlert = false;
-    }, 3000);
+    }, timeout);
   }
   constructor() { }
 }

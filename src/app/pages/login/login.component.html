@@ -1,6 +1,6 @@
 <div class="flex w-full min-h-screen justify-center items-center">
     <div class="flex w-full h-full flex-col items-center justify-center py-10">
-        <form class="space-y-4 w-10/12 max-w-96">
+        <form class="space-y-4 w-10/12 max-w-96" (ngSubmit)="login()">
             <h1 class="w-full text-2xl font-semibold">Login</h1>
             <div>
                 <label class="label">
@@ -17,7 +17,7 @@
             </div>
             <a routerLink="/passwordreset" class="text-xs text-gray-600 hover:underline hover:text-primary">Forget Password?</a>
             <div class="flex w-full items-center justify-between">
-                <a (click)="login()" id="loginButton" class="btn btn-primary"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Login</a>
+                <button type="submit" id="loginButton" class="btn btn-primary"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Login</button>
                 <div class="flex">
                     <p>New to Flytics?</p>
                     <a routerLink="/signup" class="text-primary px-2">Join now</a>
@@ -30,8 +30,9 @@
 
 </div>
 
+
 <div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
-    <div role="alert" class="alert alert-{{ alertService.alertLevel }}">
+    <div role="alert" [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}" class="alert">
         <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <span>{{ alertService.alertMessage}}</span>
       </div>
