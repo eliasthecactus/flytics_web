@@ -6,6 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { AlertService } from '../../services/alert.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+import { TokenCheckerService } from '../../services/token-checker.service';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { CookieService } from 'ngx-cookie-service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, HttpClientModule, FormsModule],
   templateUrl: './login.component.html',
-  providers: [ApiService, CookieService],
+  providers: [ApiService, CookieService, TokenCheckerService],
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
@@ -26,9 +27,15 @@ export class LoginComponent {
   };
   
 
-  constructor(private apiService: ApiService, public alertService: AlertService, private cookieService: CookieService, private router: Router) {
+  constructor(private apiService: ApiService, public alertService: AlertService, private cookieService: CookieService, private router: Router, private tokenChecker: TokenCheckerService) {
 
   }
+
+  ngOnInit() {
+    this.tokenChecker.redirectToDashboardIfLoggedin();
+  }
+
+  
 
   login() {
     this.loadingSpinner = true;

@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
 import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../services/alert.service';
+import { TokenCheckerService } from '../../services/token-checker.service';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { AlertService } from '../../services/alert.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, HttpClientModule, FormsModule],
   templateUrl: './signup.component.html',
-  providers: [ApiService],
+  providers: [ApiService, TokenCheckerService],
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
@@ -28,7 +29,11 @@ export class SignupComponent {
     confirmPassword: ''
   };
 
-  constructor(private apiService: ApiService, public alertService: AlertService, private router: Router) {}
+  constructor(private apiService: ApiService, public alertService: AlertService, private router: Router, private tokenChecker: TokenCheckerService) {}
+
+  ngOnInit() {
+    this.tokenChecker.redirectToDashboardIfLoggedin();
+  }
 
   checkAvailability(username: string) {
     var available = document.getElementById('usernameAvailable')

@@ -20,14 +20,14 @@ export class DashboardComponent {
   hasProfilePicture: boolean = false;
   avaterInformation: string = "";
 
-  constructor(private router: Router, private logoutService: LogoutService, private tokenCheckerService: TokenCheckerService, public apiService: ApiService) {}
+  constructor(private router: Router, private logoutService: LogoutService, private tokenChecker: TokenCheckerService, public apiService: ApiService) {}
 
   logout() {
     this.logoutService.logout();
   }
 
   ngOnInit() {
-    this.tokenCheckerService.checkExpired();
+    this.tokenChecker.redirectToLoginIfExpired();
   }
 
   ngAfterViewInit() {

@@ -10,7 +10,7 @@ export class TokenCheckerService {
 
   constructor(private apiService: ApiService, private router: Router, private alertService: AlertService) { }
 
-  checkExpired() {
+  redirectToLoginIfExpired() {
     this.apiService.authPing().subscribe(
       (response) => {
         console.log(response);
@@ -30,5 +30,18 @@ export class TokenCheckerService {
 
   checkTokenRefresh() {
     console.log("check if token has to be renewed")
+  }
+
+  redirectToDashboardIfLoggedin() {
+    this.apiService.authPing().subscribe(
+      (response) => {
+        if (response.code == 0) {
+          this.router.navigate(['/dashboard'])
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 }

@@ -45,8 +45,8 @@ export class AccountComponent {
   constructor(public apiService: ApiService, private router: Router, public alertService: AlertService, private tokenCheckerService: TokenCheckerService) {}
 
   ngOnInit() {
+    this.tokenCheckerService.redirectToLoginIfExpired();
     this.getAccountInformation();
-    this.tokenCheckerService.checkExpired();
   }
 
   profilePictureUrl: string = '';
