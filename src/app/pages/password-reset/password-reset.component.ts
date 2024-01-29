@@ -15,7 +15,17 @@ export class PasswordResetComponent {
   loadingSpinner: boolean = false;
   email: String = "";
   password: String = "";
+  resetPasswordType: boolean = false;
 
   constructor(public alertService: AlertService) {}
+
+
+  sendResetLink() {
+    console.log("send a password reset link to mail")
+  }
+
+  resetPassword() {
+    console.log("reset the password using token")
+  }
 
 }
