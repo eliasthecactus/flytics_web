@@ -206,6 +206,23 @@ export class AccountComponent {
     window.history.back();
   }
 
+  removeProfilePicture() {
+    this.apiService.deleteProfilePicture().subscribe(
+      (response) => {
+        if (response.code == 0) {
+          this.alertService.show("success", "Profile picture removed successfully");
+          this.hasProfilePicture = false;
+        } else {
+          this.alertService.show("error", response.message)
+        }
+
+      },
+      (error) => {
+        this.alertService.show("error", "There was an error while uploading the picture");
+        console.error(error);
+      }
+    );  }
+
   changeProfilePicture($event: any) {
     const file = $event.target.files[0];
     if (file) {
