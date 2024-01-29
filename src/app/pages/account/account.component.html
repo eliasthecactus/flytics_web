@@ -3,9 +3,8 @@
 
         <h1 class="text-2xl font-semibold">Account</h1>
         <div class="flex space-x-2">
+            <a (click)="saveInformation()" [ngClass]="{'btn-disabled' : !somethingChanged()}" class="btn btn-primary btn-disabled"><i class="fa-regular fa-floppy-disk"></i> Save</a>
             <a (click)="cancelInformation()" class="btn">Cancel</a>
-            <a (click)="saveInformation()" [ngClass]="{'btn-disabled' : !somethingChanged()}" class="btn btn-primary btn-disabled"><i
-                    class="fa-regular fa-floppy-disk"></i> Save</a>
         </div>
     </div>
     <div class="flex flex-col items-center w-10/12 max-w-72 flex-grow">

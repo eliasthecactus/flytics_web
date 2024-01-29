@@ -8,21 +8,39 @@
         </div>
     </div>
     <div class="flex h-full flex-col justify-center py-10 space-y-4 flex-grow">
+        <p>What do you wanna upload?</p>
+        <div class="flex flex-col space-y-2">
+            <div class="form-control">
+                <label class="label cursor-pointer flex justify-start space-x-2">
+                  <input type="radio" name="filesselectionradio" class="radio" [checked]="!folderUpload" (change)="toggleUploadType()" />
+                  <span class="label-text">Single file or multiple files</span> 
+                </label>
+              </div>
+              <div class="form-control">
+                <label class="label cursor-pointer flex justify-start space-x-2">
+                  <input type="radio" name="filesselectionradio" class="radio" [checked]="folderUpload" (change)="toggleUploadType()" />
+                  <span class="label-text">Folder (doesnt work on mobile)</span> 
+                </label>
+              </div>
+        </div>
+        <input *ngIf="!folderUpload" type="file" class="file-input file-input-bordered w-full max-w-xs" accept=".kml" multiple (change)="onFileSelected($event)" />
+        <input *ngIf="folderUpload" type="file" class="file-input file-input-bordered w-full max-w-xs" accept=".kml" multiple webkitdirectory (change)="onFileSelected($event)" />
+        <p class="text-xs text-content">{{ kmlFiles.length }} kml files selected</p>
+        <br>
 
-        <input type="file" class="file-input file-input-bordered w-full max-w-xs" multiple webkitdirectory />
-        <div class="flex space-x-2">
-            <input id="privateflight" type="checkbox" class="checkbox" />
-            <label for="privateflight" class="cursor-pointer text-gray-600">Private flight</label>
-            <div class="tooltip tooltip-right" data-tip="Only you will be able to see the flight">
+        <div class="flex space-x-2" *ngIf="kmlFiles.length > 0">
+            <input id="privateflight" type="checkbox" class="checkbox" [checked]="privateFlight" />
+            <label for="privateflight" class="cursor-pointer text-content">Private flight</label>
+            <div class="tooltip tooltip-top" data-tip="Only you will be able to see the flight">
                 <i class="fa-solid fa-circle-info text-sm text-gray-600"></i>
               </div>
         </div>
-
-        <div>
+        <br>
+        <div *ngIf="kmlFiles.length == 1">
             <label class="label">
                 <span class="text-base label-text">Information</span>
             </label>
-            <textarea placeholder="Optional description..." class="w-full input input-bordered input-primary py-2 h-24"></textarea>
+            <textarea placeholder="Optional description..." class="w-full input input-bordered input-primary py-2 h-24" [(ngModel)]='flightInformation'></textarea>
         </div>
 
 
