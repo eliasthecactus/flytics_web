@@ -65,6 +65,12 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/api/user/image`, options);
   }
 
+  resetPassword(userData: any): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers };
+    return this.http.post(`${this.apiUrl}/api/user/resetpassword`, userData);
+  }
+
   ping() {
     return this.http.get(this.apiUrl+"/api/ping");
   }
