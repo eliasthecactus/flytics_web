@@ -27,7 +27,7 @@ export class AddFlightComponent {
     this.kmlFiles = Array.from(selectedFiles).filter(file => {
       return (
         file.name.toLowerCase().endsWith('.kml') &&
-        file.size <= 1024 * 1024 // 1MB in bytes
+        file.size <= (1024 * 1024) * 5 // 5MB in bytes
       );
     });
     // console.log('Selected Files:', this.kmlFiles);
