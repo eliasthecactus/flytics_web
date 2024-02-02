@@ -71,6 +71,25 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/api/user/resetpassword`, userData);
   }
 
+  uploadFlight(file: File, flight_private?: boolean, flight_information?: string): Observable<any> {
+    const headers = this.getHeaders();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    if (flight_private !== undefined) {
+      formData.append('private', String(flight_private));
+    }
+  
+    if (flight_information !== undefined) {
+      formData.append('information', flight_information);
+    }
+
+
+
+    const options = { headers };
+    return this.http.post(`${this.apiUrl}/api/flights`, formData, options);
+  }
+
   ping() {
     return this.http.get(this.apiUrl+"/api/ping");
   }

@@ -4,51 +4,99 @@ import { FormsModule } from '@angular/forms';
 import { TokenCheckerService } from '../../services/token-checker.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
+import { AlertService } from '../../services/alert.service';
+import { forkJoin, tap } from 'rxjs';
+import { RouterLink } from '@angular/router';
+
+
+interface uploadState {
+  code: Number;
+  message: string;
+  file: File
+}
 
 @Component({
   selector: 'app-add-flight',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
   templateUrl: './add-flight.component.html',
   providers: [TokenCheckerService, ApiService],
   styleUrl: './add-flight.component.css'
 })
 export class AddFlightComponent {
-
-  constructor(private tokenChecker: TokenCheckerService) {}
+  constructor(
+    private tokenChecker: TokenCheckerService,
+    private apiService: ApiService,
+    public alertService: AlertService
+  ) {}
 
   folderUpload: boolean = false;
-  kmlFiles: File[] = [];
+  igcFiles: File[] = [];
   privateFlight: boolean = false;
   flightInformation: String = '';
+  whileUploading = false;
+  uploadStatus: uploadState[] = [];
+  selectedFiles: File[] = [];
+  uploadedFiles: number = 0;
+  uploadFinished: boolean = false;
+  
 
   onFileSelected(event: any) {
-    const selectedFiles: FileList = event.target.files;
-    this.kmlFiles = Array.from(selectedFiles).filter(file => {
-      return (
-        file.name.toLowerCase().endsWith('.kml') &&
-        file.size <= (1024 * 1024) * 5 // 5MB in bytes
-      );
+    this.selectedFiles = event.target.files;
+    this.igcFiles = Array.from(this.selectedFiles).filter((file) => {
+      return file.name.toLowerCase().endsWith('.igc'); //&& file.size <= (1024 * 1024) * 5 // 5MB in bytes
     });
-    // console.log('Selected Files:', this.kmlFiles);
   }
 
   toggleUploadType() {
     this.folderUpload = !this.folderUpload;
   }
 
+  togglePrivate() {
+    this.privateFlight = !this.privateFlight;
+  }
+
   ngOnInit() {
     this.tokenChecker.redirectToLoginIfExpired();
   }
 
-
-
   addFlight() {
-    console.log("add flight")
+    this.whileUploading = true;
+    this.uploadStatus.splice(0, this.uploadStatus.length);
+    console.log(this.privateFlight)
+
+    const uploadObservables = this.igcFiles.map((file) =>
+    this.apiService.uploadFlight(file, this.privateFlight).pipe(
+      tap((response) => {
+        this.uploadedFiles++;
+      })
+    )
+  );
+
+    forkJoin(uploadObservables).subscribe(
+      (responses) => {
+        responses.forEach((response) => {
+          const newEntry: uploadState = {
+            code: response.code,
+            message: response.message,
+            file: response.file,
+          };
+          this.uploadStatus.push(newEntry);
+
+        });
+        console.log(this.uploadStatus);
+      },
+      (error) => {
+        this.alertService.show('error', 'There was an error while uploading');
+        console.error(error);
+      },
+      () => {
+        this.uploadFinished = true;
+      }
+    );
   }
 
   cancelAddFlight() {
     window.history.back();
   }
-
 }
