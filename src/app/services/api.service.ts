@@ -84,11 +84,17 @@ export class ApiService {
       formData.append('information', flight_information);
     }
 
-
-
     const options = { headers };
     return this.http.post(`${this.apiUrl}/api/flights`, formData, options);
   }
+
+  deleteFlight(flight_id: Number): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers };
+    return this.http.delete(`${this.apiUrl}/api/flights/${flight_id}`, options);
+  }
+
+  
 
   ping() {
     return this.http.get(this.apiUrl+"/api/ping");
