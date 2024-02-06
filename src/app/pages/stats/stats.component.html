@@ -1,1 +1,35 @@
-<p>stats works!</p>
+<div class="w-full flex justify-between">
+    <div class="drawer">
+        <input id="filter-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content">
+          <label for="filter-drawer" class="link">Filter</label>
+        </div> 
+        <div class="drawer-side">
+          <label for="filter-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+          <div class="menu p-4 w-80 min-h-full bg-base-200 space-y-4">
+            <div>
+                <h1 class="text-xl font-semibold">Filter</h1>
+                <p class="text-xs">Click to set filter</p>
+            </div>
+            <ul class="text-base-content">
+                <li>
+                    <div class="collapse bg-base-200">
+                        <input type="checkbox" /> 
+                        <div class="collapse-title text-md font-medium">
+                          <p class="font-semibold">Date</p>
+                          <p class="text-xs text-primary">Jan - Mar</p>
+                        </div>
+                        <div class="collapse-content"> 
+                            <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31" class="appearance-none  p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+
+                              
+                        </div>
+                    </div>
+                </li>
+              </ul>
+          </div>
+
+        </div>
+      </div>
+
+</div>

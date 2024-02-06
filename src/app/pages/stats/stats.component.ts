@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './stats.component.html',
-  styleUrl: './stats.component.css'
+  styleUrl: './stats.component.css',
 })
-export class StatsComponent {
 
+export class StatsComponent {
+  selectedDate: string = "";
+
+  onDateChange(event: any): void {
+    this.selectedDate = event.target.value;
+  }
 }

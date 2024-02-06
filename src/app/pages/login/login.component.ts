@@ -43,21 +43,22 @@ export class LoginComponent {
 
     this.apiService.login(this.userData).subscribe(
       (response) => {
-        // console.log(response);
+        console.log(response);
 
         this.loadingSpinner = false;
         document.getElementById('loginButton')?.classList.remove("btn-disabled")
         // this.alertService.show("success", "Success")
         if (response.code == 0) {
-          this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
-          this.router.navigate(['/dashboard']);
+          this.cookieService.set('token', response.access_token);
+          // this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
+          // this.router.navigate(['/dashboard']);
         } else {
-          console.log(response)
+          // console.log(response)
           this.alertService.show("error", response.message)
         }
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
         this.loadingSpinner = false;
         document.getElementById('loginButton')?.classList.remove("btn-disabled")
         this.alertService.show("error", "There was an error while logging in")
