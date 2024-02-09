@@ -1,35 +1,96 @@
 <div class="w-full flex justify-between">
-    <div class="drawer">
-        <input id="filter-drawer" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content">
-          <label for="filter-drawer" class="link">Filter</label>
-        </div> 
-        <div class="drawer-side">
-          <label for="filter-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-          <div class="menu p-4 w-80 min-h-full bg-base-200 space-y-4">
-            <div>
-                <h1 class="text-xl font-semibold">Filter</h1>
-                <p class="text-xs">Click to set filter</p>
-            </div>
-            <ul class="text-base-content">
-                <li>
-                    <div class="collapse bg-base-200">
-                        <input type="checkbox" /> 
-                        <div class="collapse-title text-md font-medium">
-                          <p class="font-semibold">Date</p>
-                          <p class="text-xs text-primary">Jan - Mar</p>
-                        </div>
-                        <div class="collapse-content"> 
-                            <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31" class="appearance-none  p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
-
-                              
-                        </div>
-                    </div>
-                </li>
-              </ul>
-          </div>
-
+  <div class="drawer">
+    <input id="filter-drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content">
+      <label for="filter-drawer" class="link">Filter</label>
+    </div>
+    <div class="drawer-side">
+      <label for="filter-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <div class="menu p-4 max-w-96 w-10/12 min-h-full bg-base-200 space-y-4">
+        <div class="">
+          <h1 class="text-xl font-semibold">Filter</h1>
+          <!-- <p class="text-xs">Click to set filter</p> -->
+          <p (click)="check()">check</p>
         </div>
+        <ul class="text-base-content space-y-2">
+          <li>
+            <div class="collapse collapse-arrow bg-base-100 auto-cols-auto">
+              <input type="checkbox" />
+              <div class="collapse-title text-md font-medium">
+                <p class="font-semibold">Date</p>
+                <p *ngIf="filterParameter.fromDateBool && !filterParameter.toDateBool" class="text-xs text-primary">
+                  Since {{filterParameter.formatedFromDate | date: 'MMM d, yy'}}
+                </p>
+                <p *ngIf="!filterParameter.fromDateBool && filterParameter.toDateBool" class="text-xs text-primary">
+                  To {{filterParameter.formatedToDate | date: 'MMM d, yy'}}
+                </p>
+                <p *ngIf="filterParameter.fromDateBool && filterParameter.toDateBool" class="text-xs text-primary">
+                  {{filterParameter.formatedFromDate | date: 'MMM d, yy'}} - {{filterParameter.formatedToDate | date: 'MMM d, yy'}}
+                </p>
+              </div>
+
+              <div class="collapse-content space-y-2">
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">From</p>
+                  <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.fromDateBool" (change)="filterParameter.fromDateBool = !filterParameter.fromDateBool" />
+                    <input [(ngModel)]="filterParameter.formatedFromDate" type="date" id="fromDate" name="fromDate" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">To</p>
+                  <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.toDateBool" (change)="filterParameter.toDateBool = !filterParameter.toDateBool" />
+                    <input [(ngModel)]="filterParameter.formatedToDate" type="date" id="toDate" name="toDate" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapse collapse-arrow bg-base-100 auto-cols-auto">
+              <input type="checkbox" />
+              <div class="collapse-title text-md font-medium">
+                <p class="font-semibold">Location</p>
+                <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationRange}}km</p>
+                <!-- <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationCoordinates.lat}}, {{filterParameter.locationRange}}km</p> -->
+              </div>
+
+              <div class="collapse-content space-y-2">
+
+
+
+
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">Range (km)</p>
+                  <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.locationBool" (change)="filterParameter.locationBool = !filterParameter.locationBool"/>
+                    <input [(ngModel)]="filterParameter.locationRange" type="number" id="locationRange" name="locationRange" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">Location</p>
+                  <div class="h-32 w-full">
+                    <google-map width="100%" height="100%" [options]="mapOptions" (mapClick)="changeLocation($event)">
+                      <map-marker [position]="marker.position" />
+                    </google-map>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+
+
+        </ul>
       </div>
+
+    </div>
+  </div>
 
 </div>
