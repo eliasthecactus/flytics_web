@@ -94,6 +94,32 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/api/flights/${flight_id}`, options);
   }
 
+  getFlight(filterStringList: []): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers };
+
+    const validFilters = filterStringList.filter(filterString => filterString !== undefined && filterString !== null);
+
+    var filter= ""
+    if (validFilters.length > 0) {
+      filter += "?" + validFilters[0];
+      for (let i = 1; i < validFilters.length; i++) {
+        filter += "&" + validFilters[i];
+      }
+    }
+
+    console.log(filter);
+
+
+    return this.http.get(`${this.apiUrl}/api/flights`+filter, options);
+  }
+
+  getFlightDetail(flight_id: []): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers };
+    return this.http.get(`${this.apiUrl}/api/flights`+flight_id, options);
+  }
+
   
 
   ping() {

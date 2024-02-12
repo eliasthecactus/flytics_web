@@ -49,8 +49,8 @@ export class LoginComponent {
         document.getElementById('loginButton')?.classList.remove("btn-disabled")
         // this.alertService.show("success", "Success")
         if (response.code == 0) {
-          this.cookieService.set('token', response.access_token);
-          // this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
+          // this.cookieService.set('token', response.access_token);
+          this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
           this.router.navigate(['/dashboard']);
         } else {
           // console.log(response)

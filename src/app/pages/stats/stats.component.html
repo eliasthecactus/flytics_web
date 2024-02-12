@@ -1,17 +1,32 @@
-<div class="w-full flex justify-between">
-  <div class="drawer">
-    <input id="filter-drawer" type="checkbox" class="drawer-toggle" />
+<div class="w-full flex flex-col">
+  <div class="drawer z-20">
+    <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen"/>
     <div class="drawer-content">
-      <label for="filter-drawer" class="link">Filter</label>
+      <div class="flex w-full justify-end space-x-2 px-4">
+        <!-- <div class="tooltip" data-tip="Refresh">
+          <button class="btn btn-neutral"><i class="fa-solid fa-arrows-rotate"></i></button>
+        </div> -->
+        <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
+
+        <div class="indicator">
+          <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span> 
+          <div class="grid place-items-center">
+            <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
+          </div>
+        </div>
+
+      </div>
     </div>
     <div class="drawer-side">
       <label for="filter-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="menu p-4 max-w-96 w-10/12 min-h-full bg-base-200 space-y-4">
-        <div class="">
-          <h1 class="text-xl font-semibold">Filter</h1>
-          <!-- <p class="text-xs">Click to set filter</p> -->
-          <p (click)="check()">check</p>
-        </div>
+        <div class="flex justify-between items-center">
+          <div class="flex flex-col">
+            <h1 class="text-xl font-semibold">Filter</h1>
+            <p class="text-xs text-primary">{{myFlights.length}} flights found</p>
+            </div>
+            <button (click)="clearFilter()" [ngClass]="{'btn-disabled' : !filterSet()}" class="btn btn-neutral btn-disabled"><i class="fa-solid fa-broom"></i> Clear</button>
+          </div>
         <ul class="text-base-content space-y-2">
           <li>
             <div class="collapse collapse-arrow bg-base-100 auto-cols-auto">
@@ -55,28 +70,31 @@
               <input type="checkbox" />
               <div class="collapse-title text-md font-medium">
                 <p class="font-semibold">Location</p>
-                <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationRange}}km</p>
-                <!-- <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationCoordinates.lat}}, {{filterParameter.locationRange}}km</p> -->
+                <!-- <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationRange}}km</p> -->
+                <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationCoordinates.lat.toFixed(2)}}/{{filterParameter.locationCoordinates.lng.toFixed(2)}}, {{filterParameter.locationRange}}km</p>
               </div>
 
               <div class="collapse-content space-y-2">
 
-
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">Enable</p>
+                  <input type="checkbox" class="checkbox" [checked]="filterParameter.locationBool" (change)="filterParameter.locationBool = !filterParameter.locationBool" />
+                </div>
 
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Range (km)</p>
                   <div class="flex items-center space-x-3">
-                    <input type="checkbox" class="checkbox" [checked]="filterParameter.locationBool" (change)="filterParameter.locationBool = !filterParameter.locationBool"/>
-                    <input [(ngModel)]="filterParameter.locationRange" type="number" id="locationRange" name="locationRange" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                    <input [(ngModel)]="filterParameter.locationRange" type="number" id="locationRange" min="0" name="locationRange" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Location</p>
                   <div class="h-32 w-full">
-                    <google-map width="100%" height="100%" [options]="mapOptions" (mapClick)="changeLocation($event)">
+                    <google-map id="map" width="100%" height="100%" [options]="mapOptions" (mapClick)="changeLocation($event)">
                       <map-marker [position]="marker.position" />
+                      <map-circle [center]="marker.position" [radius]="filterParameter.locationRange*1000" />
                     </google-map>
                   </div>
                 </div>
@@ -91,6 +109,44 @@
       </div>
 
     </div>
+
   </div>
+
+  <p class="text-xs px-4">{{myFlights.length}} total</p>
+  <div *ngIf="myFlights.length > 0" class="overflow-x-auto">
+    <table class="table table-zebra table-pin-rows table-pin-cols">
+      <thead>
+        <tr>
+          <!-- <th></th> -->
+          <td>Date</td>
+          <td>Location</td>
+          <td>Distance</td>
+          <td>Duration</td>
+        </tr>
+      </thead> 
+      <tbody>
+        <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index">
+          <!-- <th>{{i}}</th> -->
+          <td>{{flight.start_time | date: 'MMM d, yy'}}</td>
+          <td>
+            <div class="flex space-x-1">
+              <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain" alt="{{flight.country}}" title="{{flight.country}}">
+              <p>{{flight.location}}</p>
+            </div>
+          </td>
+          <td>{{(flight.distance/1000).toFixed(1)}}km</td>
+          <td>
+            <div class="flex space-x-1">
+              <p *ngIf="(flight.duration / 3600) >= 1">{{ floorNumber(flight.duration/3600) }}h</p>
+              <p>{{((flight.duration % 3600) / 60).toFixed(0)}}min</p>
+
+            </div>
+            <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
+          </td>
+        </tr>
+      </tbody> 
+    </table>
+  </div>
+
 
 </div>
