@@ -12,7 +12,7 @@ export class LogoutService {
   logout() {
     console.log("logout service triggered")
     // console.log(this.cookieService.get('token'))
-    this.cookieService.delete('token');
+    this.cookieService.delete('token', '/');
     console.log("token after logout: ",this.cookieService.get('token'));
     this.router.navigate(['/login']);
   }

@@ -51,6 +51,7 @@ export class LoginComponent {
         if (response.code == 0) {
           // this.cookieService.set('token', response.access_token);
           this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
+          localStorage.setItem('user_id',response.user)
           this.router.navigate(['/dashboard']);
         } else {
           // console.log(response)

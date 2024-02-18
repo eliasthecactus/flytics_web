@@ -1,4 +1,4 @@
-<div class="flex flex-col w-full">
+<div class="flex flex-col w-full fixed h-screen">
     <div class="navbar bg-base-100 justify-between">
         <div class="flex">
             <a class="btn btn-ghost text-xl">Flytics</a>
@@ -40,9 +40,10 @@
 
         </div>
     </div>
-    <div>
-        <router-outlet></router-outlet>
-    </div>
+        <div class="w-full flex-1 overflow-y-auto">
+            <router-outlet></router-outlet>
+        </div>
+
 
     <div class="fixed bottom-3 flex justify-center w-full">
         <div class="">

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, DoCheck, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
-import { GoogleMapsModule, GoogleMap, MapMarker, MapCircle } from '@angular/google-maps';
+import { GoogleMapsModule, GoogleMap, MapMarker, MapCircle, MapKmlLayer } from '@angular/google-maps';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -9,7 +9,7 @@ import { AlertService } from '../../services/alert.service';
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle],
+  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer],
   providers: [DatePipe, ApiService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
@@ -25,11 +25,23 @@ export class StatsComponent {
     streetViewControl:false,
     // mapTypeId:google.maps.MapTypeId.HYBRID,
   };
+
+
   
 
   filterParameter = {
     fromDateBool: false,
     formatedFromDate: "",
+    distanceMin: 0,
+    distanceMax: 100,
+    distanceMinBool: false,
+    distanceMaxBool: false,
+    durationMinutesMin: 0,
+    durationMinutesMax: 30,
+    durationHoursMin: 0,
+    durationHoursMax: 1,
+    durationMinBool: false,
+    durationMaxBool: false,
     // fromDate: new Date('1970-01-01').getTime(),
     toDateBool: false,
     formatedToDate: "",
@@ -45,9 +57,41 @@ export class StatsComponent {
   originalFilter: any = { ...this.filterParameter }; 
   flightsLoading: boolean = false; 
 
+  sortColumn: string = 'start_time';
+  sortDirection: string = 'asc';
+
+  currentSelectedFlight: { id?: number, [key: string]: any } = {};
+
 
   constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService) {
 
+  }
+
+  // Function to handle sorting
+  sortTable(column: string) {
+    // Toggle sort direction if the same column is clicked again
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Set the column to sort and default to ascending order
+      this.sortColumn = column;
+      this.sortDirection = 'desc';
+    }
+
+    // Apply sorting logic to your myFlights array
+    this.myFlights.sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+
+      if (this.sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return bValue > aValue ? 1 : -1;
+      }
+    });
+  }
+
+  ngAfterViewInit() {
   }
 
   floorNumber(numb: number): number {
@@ -56,7 +100,7 @@ export class StatsComponent {
 
 
   filterSet() {
-    if (this.filterParameter.locationBool || this.filterParameter.fromDateBool || this.filterParameter.toDateBool) {
+    if (this.filterParameter.locationBool || this.filterParameter.fromDateBool || this.filterParameter.toDateBool || this.filterParameter.distanceMaxBool || this.filterParameter.distanceMinBool) {
       return true;
     }
     return false;
@@ -73,7 +117,7 @@ export class StatsComponent {
 
   ngOnInit(): void {
     this.getLocation()
-    this.filterParameter.formatedFromDate = this.datepipe.transform(new Date('1970-01-01').getTime(), 'yyyy-MM-dd')!;
+    this.filterParameter.formatedFromDate = this.datepipe.transform(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).getTime(), 'yyyy-MM-dd')!;
     this.filterParameter.formatedToDate = this.datepipe.transform(Date.now(), 'yyyy-MM-dd')!;
     // this.filterParameter.formatedFromDate = this.filterParameter.fromDate
   }
@@ -90,10 +134,14 @@ export class StatsComponent {
     const hasLocationCoordinatesChanged = previousFilterParameter.locationCoordinates !== this.filterParameter.locationCoordinates;
     const hasFormatedFromDateChanged = previousFilterParameter.formatedFromDate !== this.filterParameter.formatedFromDate;
     const hasFormatedToDateChanged = previousFilterParameter.formatedToDate !== this.filterParameter.formatedToDate;
+    const hasDistanceMaxBoolChanged = previousFilterParameter.distanceMaxBool !== this.filterParameter.distanceMaxBool;
+    const hasDistanceMinBoolChanged = previousFilterParameter.distanceMinBool !== this.filterParameter.distanceMinBool;
+    const hasDistanceMaxChanged = previousFilterParameter.distanceMax !== this.filterParameter.distanceMax;
+    const hasDistanceMinChanged = previousFilterParameter.distanceMin !== this.filterParameter.distanceMin;
     
 
     // Add more checks for other properties as needed
-    if (hasFromDateChanged || hasToDateChanged || hasLocationBoolChanged || hasLocationRangeChanged || hasFormatedFromDateChanged || hasFormatedToDateChanged || hasLocationCoordinatesChanged) {
+    if (hasFromDateChanged || hasToDateChanged || hasLocationBoolChanged || hasLocationRangeChanged || hasFormatedFromDateChanged || hasFormatedToDateChanged || hasLocationCoordinatesChanged || hasDistanceMinBoolChanged || hasDistanceMaxBoolChanged || hasDistanceMinChanged || hasDistanceMaxChanged) {
       console.log(this.filterParameter);
       this.loadFLights();
       this.cdr.detectChanges();
@@ -103,12 +151,33 @@ export class StatsComponent {
     this._previousFilterParameter = { ...this.filterParameter };
   }
 
+  realDateTime(raw_time: string, dst_offset: number, raw_offset: number) {
+    const baseDate = new Date(raw_time + 'Z');
+
+    // Calculate the total offset in milliseconds
+    const totalOffset = (dst_offset + raw_offset) * 1000;
+  
+    // Create a new Date object by adding the total offset to the baseDate
+    const adjustedDate = new Date(baseDate.getTime() + totalOffset);
+  
+    return adjustedDate;
+  }
+
+  showFlightDetail(flight: {}) {
+    const modal = document.getElementById('flightDetailModal') as HTMLDialogElement | null;
+
+    if (modal) {
+      this.currentSelectedFlight = flight;
+      modal.showModal();
+    }
+  }
+
 
   loadFLights() {
     this.flightsLoading = true;
     var filter: any = []
 
-    filter.push("user=3")
+    filter.push("user="+localStorage.getItem('user_id'))
 
     if (this.filterParameter.locationBool) {
       filter.push("location_lat="+this.filterParameter.locationCoordinates.lat+"&location_long="+this.filterParameter.locationCoordinates.lng+"&location_range_max="+(1000*this.filterParameter.locationRange))
@@ -118,9 +187,28 @@ export class StatsComponent {
       filter.push("start_date="+this.filterParameter.formatedFromDate)
     }
 
-    if (this.filterParameter.toDateBool) {
-      filter.push("end_date="+this.filterParameter.formatedToDate)
+    if (this.filterParameter.distanceMaxBool) {
+      filter.push("distance_max="+this.filterParameter.distanceMax*1000) //add one kilometer so the upper limit is also in there
     }
+
+    if (this.filterParameter.distanceMinBool) {
+      filter.push("distance_min="+this.filterParameter.distanceMin*1000)
+    }
+
+    // if (this.filterParameter.toDateBool) {
+    //   filter.push("end_date="+this.filterParameter.formatedToDate)
+    // }
+
+
+    if (this.filterParameter.toDateBool) {
+      // Add one day to the toDate
+      const toDate = new Date(this.filterParameter.formatedToDate);
+      toDate.setDate(toDate.getDate() + 1);
+  
+      filter.push("end_date=" + this.datepipe.transform(toDate, 'yyyy-MM-dd'));
+    }
+
+
 
 
     this.apiService.getFlight(filter).subscribe(
@@ -129,6 +217,7 @@ export class StatsComponent {
         if (response.code == 0) {
           this.myFlights = response.flights;
           console.log(this.myFlights)
+          this.sortTable(this.sortColumn);
         } else {
           this.alertService.show("error", response.message);
         }

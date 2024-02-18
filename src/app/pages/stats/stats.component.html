@@ -1,6 +1,27 @@
-<div class="w-full flex flex-col">
+<div class="flex w-full h-full overflow-hidden flex-col">
+
+  <div class="flex items-center justify-end space-x-2 m-2">
+    <!-- <select class="select select-bordered block">
+      <option disabled selected>Sort</option>
+      <option>Han Solo</option>
+      <option>Greedo</option>
+    </select> -->
+
+    <div class="indicator">
+      <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
+      <div class="grid place-items-center">
+        <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <div class="drawer z-20">
-    <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen"/>
+    <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen" />
+
+
     <div class="drawer-content">
       <div class="flex w-full justify-end space-x-2 px-4">
         <!-- <div class="tooltip" data-tip="Refresh">
@@ -8,12 +29,7 @@
         </div> -->
         <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
 
-        <div class="indicator">
-          <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span> 
-          <div class="grid place-items-center">
-            <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
-          </div>
-        </div>
+
 
       </div>
     </div>
@@ -24,9 +40,10 @@
           <div class="flex flex-col">
             <h1 class="text-xl font-semibold">Filter</h1>
             <p class="text-xs text-primary">{{myFlights.length}} flights found</p>
-            </div>
-            <button (click)="clearFilter()" [ngClass]="{'btn-disabled' : !filterSet()}" class="btn btn-neutral btn-disabled"><i class="fa-solid fa-broom"></i> Clear</button>
           </div>
+          <button (click)="clearFilter()" [ngClass]="{'btn-disabled' : !filterSet()}"
+            class="btn btn-neutral btn-disabled"><i class="fa-solid fa-broom"></i> Clear</button>
+        </div>
         <ul class="text-base-content space-y-2">
           <li>
             <div class="collapse collapse-arrow bg-base-100 auto-cols-auto">
@@ -40,7 +57,8 @@
                   To {{filterParameter.formatedToDate | date: 'MMM d, yy'}}
                 </p>
                 <p *ngIf="filterParameter.fromDateBool && filterParameter.toDateBool" class="text-xs text-primary">
-                  {{filterParameter.formatedFromDate | date: 'MMM d, yy'}} - {{filterParameter.formatedToDate | date: 'MMM d, yy'}}
+                  {{filterParameter.formatedFromDate | date: 'MMM d, yy'}} - {{filterParameter.formatedToDate | date:
+                  'MMM d, yy'}}
                 </p>
               </div>
 
@@ -48,16 +66,20 @@
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">From</p>
                   <div class="flex items-center space-x-3">
-                    <input type="checkbox" class="checkbox" [checked]="filterParameter.fromDateBool" (change)="filterParameter.fromDateBool = !filterParameter.fromDateBool" />
-                    <input [(ngModel)]="filterParameter.formatedFromDate" type="date" id="fromDate" name="fromDate" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.fromDateBool"
+                      (change)="filterParameter.fromDateBool = !filterParameter.fromDateBool" />
+                    <input [(ngModel)]="filterParameter.formatedFromDate" type="date" id="fromDate" name="fromDate"
+                      class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">To</p>
                   <div class="flex items-center space-x-3">
-                    <input type="checkbox" class="checkbox" [checked]="filterParameter.toDateBool" (change)="filterParameter.toDateBool = !filterParameter.toDateBool" />
-                    <input [(ngModel)]="filterParameter.formatedToDate" type="date" id="toDate" name="toDate" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.toDateBool"
+                      (change)="filterParameter.toDateBool = !filterParameter.toDateBool" />
+                    <input [(ngModel)]="filterParameter.formatedToDate" type="date" id="toDate" name="toDate"
+                      class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
 
@@ -71,31 +93,87 @@
               <div class="collapse-title text-md font-medium">
                 <p class="font-semibold">Location</p>
                 <!-- <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationRange}}km</p> -->
-                <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationCoordinates.lat.toFixed(2)}}/{{filterParameter.locationCoordinates.lng.toFixed(2)}}, {{filterParameter.locationRange}}km</p>
+                <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">
+                  {{filterParameter.locationCoordinates.lat.toFixed(2)}}/{{filterParameter.locationCoordinates.lng.toFixed(2)}},
+                  {{filterParameter.locationRange}}km</p>
               </div>
 
               <div class="collapse-content space-y-2">
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Enable</p>
-                  <input type="checkbox" class="checkbox" [checked]="filterParameter.locationBool" (change)="filterParameter.locationBool = !filterParameter.locationBool" />
+                  <input type="checkbox" class="checkbox" [checked]="filterParameter.locationBool"
+                    (change)="filterParameter.locationBool = !filterParameter.locationBool" />
                 </div>
 
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Range (km)</p>
                   <div class="flex items-center space-x-3">
-                    <input [(ngModel)]="filterParameter.locationRange" type="number" id="locationRange" min="0" name="locationRange" class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                    <input [(ngModel)]="filterParameter.locationRange" type="number" id="locationRange" min="0"
+                      name="locationRange"
+                      class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Location</p>
                   <div class="h-32 w-full">
-                    <google-map id="map" width="100%" height="100%" [options]="mapOptions" (mapClick)="changeLocation($event)">
+                    <google-map id="map" width="100%" height="100%" [options]="mapOptions"
+                      (mapClick)="changeLocation($event)">
                       <map-marker [position]="marker.position" />
                       <map-circle [center]="marker.position" [radius]="filterParameter.locationRange*1000" />
                     </google-map>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="collapse collapse-arrow bg-base-100 auto-cols-auto">
+              <input type="checkbox" />
+              <!-- <p *ngIf="filterParameter.locationBool" class="text-xs text-primary">{{filterParameter.locationRange}}km</p> -->
+              <div class="collapse-title text-md font-medium">
+                <p class="font-semibold">Distance</p>
+                <p *ngIf="filterParameter.distanceMinBool && !filterParameter.distanceMaxBool"
+                  class="text-xs text-primary">
+                  {{filterParameter.distanceMin}}km and up
+                </p>
+                <p *ngIf="!filterParameter.distanceMinBool && filterParameter.distanceMaxBool"
+                  class="text-xs text-primary">
+                  up to {{filterParameter.distanceMin}}km
+                </p>
+                <p *ngIf="filterParameter.distanceMinBool && filterParameter.distanceMaxBool"
+                  class="text-xs text-primary">
+                  Between {{filterParameter.distanceMin}}km and {{filterParameter.distanceMax}}km
+                </p>
+              </div>
+
+              <div class="collapse-content space-y-2">
+
+
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">Min Distance (km)</p>
+                  <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.distanceMinBool"
+                      (change)="filterParameter.distanceMinBool = !filterParameter.distanceMinBool" />
+                    <input [(ngModel)]="filterParameter.distanceMin" type="number" id="distanceMin" min="0"
+                      name="distanceMin"
+                      class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
+                  </div>
+                </div>
+
+
+                <div class="flex flex-col space-y-1">
+                  <p class="text-xs">Max Distance (km)</p>
+                  <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox" [checked]="filterParameter.distanceMaxBool"
+                      (change)="filterParameter.distanceMaxBool = !filterParameter.distanceMaxBool" />
+                    <input [(ngModel)]="filterParameter.distanceMax" type="number" id="distanceMax" min="0"
+                      name="distanceMax"
+                      class="w-full bg-transparent appearance-none p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>
 
@@ -111,27 +189,84 @@
     </div>
 
   </div>
+  <!-- drawer up -->
+  <dialog id="flightDetailModal" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <div class="flex flex-col w-full">
 
+        <h3 class="font-bold text-lg pb-4">Flight #{{currentSelectedFlight.id}}</h3>
+
+
+        <div class="h-32 w-full">
+          <div class="w-full h-full">
+            <div class="p-2 w-full h-full border-amber-600 border-2">
+              <div id="map"></div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+        <p class="py-4">Press ESC key or click on ✕ button to close</p>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- table down -->
   <p class="text-xs px-4">{{myFlights.length}} total</p>
-  <div *ngIf="myFlights.length > 0" class="overflow-x-auto">
+  <div *ngIf="myFlights.length > 0" class="h-full overflow-y-auto">
     <table class="table table-zebra table-pin-rows table-pin-cols">
       <thead>
         <tr>
           <!-- <th></th> -->
-          <td>Date</td>
-          <td>Location</td>
-          <td>Distance</td>
-          <td>Duration</td>
+          <td (click)="sortTable('start_time')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_time'">
+            Date <i class="fa-solid fa-chevron-down"
+              *ngIf="sortColumn === 'start_time' && sortDirection === 'desc'"></i>
+            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'start_time' && sortDirection === 'asc'"></i>
+          </td>
+          <td (click)="sortTable('location')" class="cursor-pointer" [class.sorted]="sortColumn === 'location'">
+            Location <i class="fa-solid fa-chevron-down"
+              *ngIf="sortColumn === 'location' && sortDirection === 'asc'"></i>
+            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'location' && sortDirection === 'desc'"></i>
+          </td>
+          <td (click)="sortTable('distance')" class="cursor-pointer" [class.sorted]="sortColumn === 'distance'">
+            Distance <i class="fa-solid fa-chevron-down"
+              *ngIf="sortColumn === 'distance' && sortDirection === 'desc'"></i>
+            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'distance' && sortDirection === 'asc'"></i>
+          </td>
+          <td (click)="sortTable('duration')" class="cursor-pointer" [class.sorted]="sortColumn === 'duration'">
+            Duration <i class="fa-solid fa-chevron-down"
+              *ngIf="sortColumn === 'duration' && sortDirection === 'desc'"></i>
+            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'duration' && sortDirection === 'asc'"></i>
+          </td>
         </tr>
-      </thead> 
-      <tbody>
-        <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index">
+      </thead>
+      <tbody class="">
+        <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index"
+          (click)="showFlightDetail(flight)">
           <!-- <th>{{i}}</th> -->
-          <td>{{flight.start_time | date: 'MMM d, yy'}}</td>
+          <td class="">
+            <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
+            <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
+
+            <p>{{realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset) | date:
+              'H:mm':'GMT'}}</p>
+          </td>
           <td>
             <div class="flex space-x-1">
-              <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain" alt="{{flight.country}}" title="{{flight.country}}">
-              <p>{{flight.location}}</p>
+              <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain"
+                alt="{{flight.country}}" title="{{flight.country}}">
+              <a class="whitespace-normal" target="_blank">{{flight.location}}</a>
+              <!-- <a href="http://maps.google.com/maps?q={{flight.start_lat}},{{flight.start_long}}" class="whitespace-normal" target="_blank">{{flight.location}}</a> -->
             </div>
           </td>
           <td>{{(flight.distance/1000).toFixed(1)}}km</td>
@@ -144,7 +279,7 @@
             <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
           </td>
         </tr>
-      </tbody> 
+      </tbody>
     </table>
   </div>
 
