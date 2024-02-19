@@ -15,6 +15,7 @@ import { PasswordResetComponent } from './pages/password-reset/password-reset.co
 import { OverviewComponent } from './pages/overview/overview.component';
 import { StatsComponent } from './pages/stats/stats.component';
 import { FeedComponent } from './pages/feed/feed.component';
+import { MapComponent } from './components/map/map.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -35,5 +36,6 @@ export const routes: Routes = [
     { path: 'privacypolicy', component: PrivacyPolicyComponent },
     { path: 'cookiepolicy', component: CookiePolicyComponent },
     { path: 'passwordreset', component: PasswordResetComponent },
+    { path: 'test', component: MapComponent },
     { path: "**", redirectTo: "home" },
 ];

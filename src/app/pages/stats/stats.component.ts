@@ -5,11 +5,14 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
+import { MapComponent } from '../../components/map/map.component';
+import { MapService } from '../../services/map.service';
+
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer],
+  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent],
   providers: [DatePipe, ApiService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
@@ -26,7 +29,7 @@ export class StatsComponent {
     // mapTypeId:google.maps.MapTypeId.HYBRID,
   };
 
-
+  
   
 
   filterParameter = {
@@ -63,7 +66,7 @@ export class StatsComponent {
   currentSelectedFlight: { id?: number, [key: string]: any } = {};
 
 
-  constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService) {
+  constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
 
   }
 
@@ -112,7 +115,6 @@ export class StatsComponent {
     this.filterParameter = { ...this.originalFilter };
 
   }
-
 
 
   ngOnInit(): void {
@@ -248,15 +250,29 @@ export class StatsComponent {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position)=>{
           var coord = position.coords;
-          this.marker.position = { lat: coord.latitude, lng: coord.longitude};
-          this.mapOptions.center = {lat: 46, lng: 46};
+          // this.marker.position = { lat: coord.latitude, lng: coord.longitude};
+          // this.mapOptions.center = {lat: 46, lng: 46};
           this.filterParameter.locationCoordinates.lat = coord.latitude;
           this.filterParameter.locationCoordinates.lng = coord.longitude;
+          console.log(this.filterParameter)
+          this.mapService.recenterMap('locationMap', coord.latitude, coord.longitude, 10);
+          this.mapService.addMarker('locationMap', coord.latitude, coord.longitude)
           
         });
     } else {
        console.log("No support for geolocation")
     }
+  }
+
+  handleMapClick(event: any): void {
+    console.log('Map clicked at:', event);
+    if (event.mapId == "locationMap") {
+      this.mapService.clearMarkers(event.mapId)
+      this.mapService.recenterMap(event.mapId, event.lat, event.lng, 10)
+      this.mapService.addMarker(event.mapId, event.lat, event.lng)
+      this.filterParameter.locationCoordinates = { lat: event.lat, lng: event.lng }
+    }
+
   }
 
 }

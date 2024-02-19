@@ -1,12 +1,11 @@
 <div class="flex w-full h-full overflow-hidden flex-col">
-
   <div class="flex items-center justify-end space-x-2 m-2">
     <!-- <select class="select select-bordered block">
       <option disabled selected>Sort</option>
       <option>Han Solo</option>
       <option>Greedo</option>
     </select> -->
-
+    <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
     <div class="indicator">
       <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
       <div class="grid place-items-center">
@@ -17,22 +16,11 @@
 
 
 
-
+<!-- drawer down -->
   <div class="drawer z-20">
+
     <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen" />
 
-
-    <div class="drawer-content">
-      <div class="flex w-full justify-end space-x-2 px-4">
-        <!-- <div class="tooltip" data-tip="Refresh">
-          <button class="btn btn-neutral"><i class="fa-solid fa-arrows-rotate"></i></button>
-        </div> -->
-        <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
-
-
-
-      </div>
-    </div>
     <div class="drawer-side">
       <label for="filter-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="menu p-4 max-w-96 w-10/12 min-h-full bg-base-200 space-y-4">
@@ -119,11 +107,13 @@
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Location</p>
                   <div class="h-32 w-full">
-                    <google-map id="map" width="100%" height="100%" [options]="mapOptions"
+                    <!-- <google-map id="map" width="100%" height="100%" [options]="mapOptions"
                       (mapClick)="changeLocation($event)">
                       <map-marker [position]="marker.position" />
                       <map-circle [center]="marker.position" [radius]="filterParameter.locationRange*1000" />
-                    </google-map>
+                    </google-map> -->
+                    <app-map mapId="locationMap" (mapClick)="handleMapClick($event)"></app-map>
+                    <!-- <app-map></app-map> -->
                   </div>
                 </div>
 
@@ -181,8 +171,6 @@
             </div>
           </li>
 
-
-
         </ul>
       </div>
 
@@ -190,6 +178,8 @@
 
   </div>
   <!-- drawer up -->
+
+  <!-- flight detail down -->
   <dialog id="flightDetailModal" class="modal">
     <div class="modal-box">
       <form method="dialog">
@@ -200,17 +190,9 @@
         <h3 class="font-bold text-lg pb-4">Flight #{{currentSelectedFlight.id}}</h3>
 
 
-        <div class="h-32 w-full">
-          <div class="w-full h-full">
-            <div class="p-2 w-full h-full border-amber-600 border-2">
-              <div id="map"></div>
-            </div>
-          </div>
+        <div class="h-52 w-full border-2 border-lime-400">
+          <app-map mapId="map{{currentSelectedFlight.id}}"></app-map>
         </div>
-
-
-
-
 
 
 
@@ -220,68 +202,89 @@
 
     </div>
   </dialog>
+  <!-- flight detail up -->
+
+  <p class="text-xs px-4">{{myFlights.length}} total</p>
+  <div role="tablist" class="tabs tabs-lifted m-2 overflow-hidden max-h-full">
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="List" checked/>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box h-full overflow-scroll">
+      <p *ngIf="myFlights.length == 0">There are no Flights</p>
+      <div *ngIf="myFlights.length > 0" class="h-full overflow-y-auto">
+        <table class="table table-zebra table-pin-rows table-pin-cols">
+          <thead>
+            <tr>
+              <!-- <th></th> -->
+              <td (click)="sortTable('start_time')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_time'">
+                Date <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'start_time' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'start_time' && sortDirection === 'asc'"></i>
+              </td>
+              <td (click)="sortTable('location')" class="cursor-pointer" [class.sorted]="sortColumn === 'location'">
+                Location <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'location' && sortDirection === 'asc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'location' && sortDirection === 'desc'"></i>
+              </td>
+              <td (click)="sortTable('distance')" class="cursor-pointer" [class.sorted]="sortColumn === 'distance'">
+                Distance <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'distance' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'distance' && sortDirection === 'asc'"></i>
+              </td>
+              <td (click)="sortTable('duration')" class="cursor-pointer" [class.sorted]="sortColumn === 'duration'">
+                Duration <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'duration' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'duration' && sortDirection === 'asc'"></i>
+              </td>
+            </tr>
+          </thead>
+          <tbody class="">
+            <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index"
+              (click)="showFlightDetail(flight)">
+              <!-- <th>{{i}}</th> -->
+              <td class="">
+                <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
+                <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
+    
+                <p>{{realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset) | date:
+                  'H:mm':'GMT'}}</p>
+              </td>
+              <td>
+                <div class="flex space-x-1">
+                  <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain"
+                    alt="{{flight.country}}" title="{{flight.country}}">
+                  <a class="whitespace-normal" target="_blank">{{flight.location}}</a>
+                  <!-- <a href="http://maps.google.com/maps?q={{flight.start_lat}},{{flight.start_long}}" class="whitespace-normal" target="_blank">{{flight.location}}</a> -->
+                </div>
+              </td>
+              <td>{{(flight.distance/1000).toFixed(1)}}km</td>
+              <td>
+                <div class="flex space-x-1">
+                  <p *ngIf="(flight.duration / 3600) >= 1">{{ floorNumber(flight.duration/3600) }}h</p>
+                  <p>{{((flight.duration % 3600) / 60).toFixed(0)}}min</p>
+    
+                </div>
+                <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Map" />
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
+      <div class="h-52">
+        <app-map mapId="flightsMap"></app-map>
+
+      </div>
+    </div>
+  
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Stats" />
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
+  </div>
+
 
   <!-- table down -->
-  <p class="text-xs px-4">{{myFlights.length}} total</p>
-  <div *ngIf="myFlights.length > 0" class="h-full overflow-y-auto">
-    <table class="table table-zebra table-pin-rows table-pin-cols">
-      <thead>
-        <tr>
-          <!-- <th></th> -->
-          <td (click)="sortTable('start_time')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_time'">
-            Date <i class="fa-solid fa-chevron-down"
-              *ngIf="sortColumn === 'start_time' && sortDirection === 'desc'"></i>
-            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'start_time' && sortDirection === 'asc'"></i>
-          </td>
-          <td (click)="sortTable('location')" class="cursor-pointer" [class.sorted]="sortColumn === 'location'">
-            Location <i class="fa-solid fa-chevron-down"
-              *ngIf="sortColumn === 'location' && sortDirection === 'asc'"></i>
-            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'location' && sortDirection === 'desc'"></i>
-          </td>
-          <td (click)="sortTable('distance')" class="cursor-pointer" [class.sorted]="sortColumn === 'distance'">
-            Distance <i class="fa-solid fa-chevron-down"
-              *ngIf="sortColumn === 'distance' && sortDirection === 'desc'"></i>
-            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'distance' && sortDirection === 'asc'"></i>
-          </td>
-          <td (click)="sortTable('duration')" class="cursor-pointer" [class.sorted]="sortColumn === 'duration'">
-            Duration <i class="fa-solid fa-chevron-down"
-              *ngIf="sortColumn === 'duration' && sortDirection === 'desc'"></i>
-            <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'duration' && sortDirection === 'asc'"></i>
-          </td>
-        </tr>
-      </thead>
-      <tbody class="">
-        <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index"
-          (click)="showFlightDetail(flight)">
-          <!-- <th>{{i}}</th> -->
-          <td class="">
-            <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
-            <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
 
-            <p>{{realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset) | date:
-              'H:mm':'GMT'}}</p>
-          </td>
-          <td>
-            <div class="flex space-x-1">
-              <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain"
-                alt="{{flight.country}}" title="{{flight.country}}">
-              <a class="whitespace-normal" target="_blank">{{flight.location}}</a>
-              <!-- <a href="http://maps.google.com/maps?q={{flight.start_lat}},{{flight.start_long}}" class="whitespace-normal" target="_blank">{{flight.location}}</a> -->
-            </div>
-          </td>
-          <td>{{(flight.distance/1000).toFixed(1)}}km</td>
-          <td>
-            <div class="flex space-x-1">
-              <p *ngIf="(flight.duration / 3600) >= 1">{{ floorNumber(flight.duration/3600) }}h</p>
-              <p>{{((flight.duration % 3600) / 60).toFixed(0)}}min</p>
-
-            </div>
-            <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
 
 </div>
