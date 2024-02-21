@@ -6,6 +6,7 @@ import { AlertService } from '../../services/alert.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TokenCheckerService } from '../../services/token-checker.service';
+import { LogoutService } from '../../services/logout.service';
 
 @Component({
   selector: 'app-account',
@@ -42,7 +43,7 @@ export class AccountComponent {
 
   loadingSpinner: boolean = false;
 
-  constructor(public apiService: ApiService, private router: Router, public alertService: AlertService, private tokenCheckerService: TokenCheckerService) {}
+  constructor(public apiService: ApiService, private router: Router, public alertService: AlertService, private tokenCheckerService: TokenCheckerService, private logoutService: LogoutService) {}
 
   ngOnInit() {
     this.tokenCheckerService.redirectToLoginIfExpired();
@@ -260,7 +261,8 @@ export class AccountComponent {
           document.getElementById('modalText')!.innerHTML = "Your accont has been deleted successfully. You will be redirected to the homepage now."
           document.getElementById('deleteButton')!.classList.add('hidden')
           setTimeout(() => {
-            this.router.navigate(['/home']);;
+            // this.router.navigate(['/home']);
+            this.logoutService.logout();
           }, 3000);
         } else if (response.code == 99) {
           this.alertService.show("success", "Your token expired. Please login to delete your account.")
@@ -271,7 +273,6 @@ export class AccountComponent {
           console.log("else what")
         }
         // this.router.navigate(['/login']);
-        //tbd logout
       },
       (error) => {
         console.log(error);

@@ -17,7 +17,7 @@
 
 
 <!-- drawer down -->
-  <div class="drawer z-20">
+  <div class="drawer z-50">
 
     <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen" />
 
@@ -191,7 +191,7 @@
 
 
         <div class="h-52 w-full border-2 border-lime-400">
-          <app-map mapId="map{{currentSelectedFlight.id}}"></app-map>
+          <app-map mapId="detailMap"></app-map>
         </div>
 
 
@@ -208,7 +208,7 @@
   <div role="tablist" class="tabs tabs-lifted m-2 overflow-hidden max-h-full">
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="List" checked/>
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box h-full overflow-scroll">
-      <p *ngIf="myFlights.length == 0">There are no Flights</p>
+      <p *ngIf="myFlights.length == 0" class="p-2 text-xs">There are currently no Flights. Click <span class="link" routerLink="/add">here</span> to add one</p>
       <div *ngIf="myFlights.length > 0" class="h-full overflow-y-auto">
         <table class="table table-zebra table-pin-rows table-pin-cols">
           <thead>
@@ -270,20 +270,20 @@
       </div>
     </div>
   
-    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Map" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
-      <div class="h-52">
-        <app-map mapId="flightsMap"></app-map>
-
+    <input type="radio" (click)="openFlightMap()" name="my_tabs_2" role="tab" class="tab" aria-label="Map" />
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2 z-20">
+      <div class="h-96">
+        <app-map mapId="flightsMap" [location]="{lat: 0, lng: 0}" [zoom]="2"></app-map>
       </div>
     </div>
   
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Stats" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">Tab content 3</div>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+      <h1>Stats</h1>
+    </div>
   </div>
 
 
-  <!-- table down -->
 
 
 

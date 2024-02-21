@@ -2,13 +2,13 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@
 import * as L from 'leaflet';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { MapService } from '../../services/map.service';
-
+import { HttpClientModule } from '@angular/common/http';
 
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [LeafletModule],
+  imports: [LeafletModule, HttpClientModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css',
   providers: []
@@ -36,6 +36,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   ngOnInit() {
+    console.log(this.mapId)
   }
 
 

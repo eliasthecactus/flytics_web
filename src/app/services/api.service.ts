@@ -120,7 +120,17 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}/api/flights`+flight_id, options);
   }
 
-  
+  getFlightFile(flight_id: Number, fileType?: string): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers };
+
+    var parameter = ""
+
+    if (fileType) {
+      parameter += "?type="+fileType
+    }
+    return this.http.get(`${this.apiUrl}/api/flights/${flight_id}/download`+parameter, options);
+  }
 
   ping() {
     return this.http.get(this.apiUrl+"/api/ping");

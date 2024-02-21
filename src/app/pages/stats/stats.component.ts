@@ -7,13 +7,37 @@ import { HttpClientModule } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { MapComponent } from '../../components/map/map.component';
 import { MapService } from '../../services/map.service';
+import { RouterLink } from '@angular/router';
+import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle } from 'ng-apexcharts';
 
+
+interface Flight {
+  id: number;
+  country: string;
+  country_code: string;
+  distance: number;
+  duration: number;
+  end_height: number;
+  igc_sum: string;
+  info: null | any;
+  location: string;
+  public: boolean;
+  start_height: number;
+  start_lat: number;
+  start_long: number;
+  start_time: string;
+  timezone: string;
+  timezone_dst_offset: number;
+  timezone_raw_offset: number;
+  uploaded: string;
+  user: number;
+}
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent],
-  providers: [DatePipe, ApiService],
+  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent, HttpClientModule, RouterLink, NgApexchartsModule],
+  providers: [DatePipe, ApiService, MapService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
 })
@@ -63,7 +87,7 @@ export class StatsComponent {
   sortColumn: string = 'start_time';
   sortDirection: string = 'asc';
 
-  currentSelectedFlight: { id?: number, [key: string]: any } = {};
+  currentSelectedFlight: Partial<Flight> = {};
 
 
   constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
@@ -95,6 +119,7 @@ export class StatsComponent {
   }
 
   ngAfterViewInit() {
+
   }
 
   floorNumber(numb: number): number {
@@ -122,8 +147,12 @@ export class StatsComponent {
     this.filterParameter.formatedFromDate = this.datepipe.transform(new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).getTime(), 'yyyy-MM-dd')!;
     this.filterParameter.formatedToDate = this.datepipe.transform(Date.now(), 'yyyy-MM-dd')!;
     // this.filterParameter.formatedFromDate = this.filterParameter.fromDate
+
   }
 
+  openFlightMap():void {
+    this.mapService.resizeMap('flightsMap')
+ }
 
   ngDoCheck(): void {
     const previousFilterParameter = { ...this._previousFilterParameter }; // Make a copy of the previous state
@@ -145,6 +174,9 @@ export class StatsComponent {
     // Add more checks for other properties as needed
     if (hasFromDateChanged || hasToDateChanged || hasLocationBoolChanged || hasLocationRangeChanged || hasFormatedFromDateChanged || hasFormatedToDateChanged || hasLocationCoordinatesChanged || hasDistanceMinBoolChanged || hasDistanceMaxBoolChanged || hasDistanceMinChanged || hasDistanceMaxChanged) {
       console.log(this.filterParameter);
+      this.mapService.clearCircles("locationMap")
+      this.mapService.addCircle("locationMap", this.filterParameter.locationCoordinates.lat, this.filterParameter.locationCoordinates.lng, this.filterParameter.locationRange*1000)
+
       this.loadFLights();
       this.cdr.detectChanges();
     }
@@ -165,12 +197,31 @@ export class StatsComponent {
     return adjustedDate;
   }
 
-  showFlightDetail(flight: {}) {
+  showFlightDetail(flight: Flight) {
     const modal = document.getElementById('flightDetailModal') as HTMLDialogElement | null;
 
     if (modal) {
       this.currentSelectedFlight = flight;
-      modal.showModal();
+      this.apiService.getFlightFile(flight.id, "geojson").subscribe(
+        (geoJSONData) => {
+          this.mapService.removeGeoJSONLayer('detailMap');
+          this.mapService.addGeoJSONLayer('detailMap', geoJSONData);
+          this.mapService.recenterMap('detailMap', this.currentSelectedFlight.start_lat!, this.currentSelectedFlight.start_long!, 12);
+          modal.showModal();
+        },
+        (error) => {
+          this.alertService.show("error", "There was an error while opening the flight")
+          console.error('Error fetching GeoJSON:', error);
+          // Handle error appropriately, e.g., show an error message
+        }
+      );
+
+      // this.mapService.removeGeoJSONLayer("detailMap");
+      // // tbd get geojson url
+      // const geoJSONUrl = '';
+      // this.mapService.addGeoJSONLayer("detailMap", geoJSONUrl);
+      // this.mapService.recenterMap("detailMap", this.currentSelectedFlight.start_lat!, this.currentSelectedFlight.start_long!, 12);
+      // modal.showModal();
     }
   }
 
@@ -229,6 +280,17 @@ export class StatsComponent {
         this.alertService.show("error", "There was an error while loading the flights")
       },
       () => {
+        this.mapService.clearMarkers('flightsMap');
+        for (const flight of this.myFlights) {
+          // console.log(flight.id)
+          const flightMarker = this.mapService.addMarker('flightsMap', flight.start_lat, flight.start_long, "<div>Flight No.: #"+flight.id.toString()+"<br>Start: "+flight.start_time+"<br>Distance: "+flight.distance/1000+"km</div>");
+
+          if (flightMarker !== null) {
+            flightMarker.on('click', () => {
+              this.showFlightDetail(flight);
+            });
+          }
+        }
         this.flightsLoading = false;
       }
     );
@@ -236,15 +298,17 @@ export class StatsComponent {
 
 
 
-  changeLocation(event: google.maps.MapMouseEvent) {
-    // this.markerPositions.push(event.latLng!.toJSON());
-    let newMarkerPositions = [event.latLng!.toJSON()];
-    this.marker.position = { lat: newMarkerPositions[0]['lat'], lng: newMarkerPositions[0]['lng']};
-    // this.filterParameter.locationCoordinates.lat = newMarkerPositions[0]['lat']
-    // this.filterParameter.locationCoordinates.lng = newMarkerPositions[0]['lng']
-    this.filterParameter.locationCoordinates = { lat: newMarkerPositions[0]['lat'], lng: newMarkerPositions[0]['lng'] }
-    console.log(this.marker.position)
-  }
+
+
+  // changeLocation(event: google.maps.MapMouseEvent) {
+  //   // this.markerPositions.push(event.latLng!.toJSON());
+  //   let newMarkerPositions = [event.latLng!.toJSON()];
+  //   this.marker.position = { lat: newMarkerPositions[0]['lat'], lng: newMarkerPositions[0]['lng']};
+  //   // this.filterParameter.locationCoordinates.lat = newMarkerPositions[0]['lat']
+  //   // this.filterParameter.locationCoordinates.lng = newMarkerPositions[0]['lng']
+  //   this.filterParameter.locationCoordinates = { lat: newMarkerPositions[0]['lat'], lng: newMarkerPositions[0]['lng'] }
+  //   console.log(this.marker.position)
+  // }
 
   getLocation(): void{
     if (navigator.geolocation) {
@@ -257,6 +321,7 @@ export class StatsComponent {
           console.log(this.filterParameter)
           this.mapService.recenterMap('locationMap', coord.latitude, coord.longitude, 10);
           this.mapService.addMarker('locationMap', coord.latitude, coord.longitude)
+          this.mapService.addCircle('locationMap', coord.latitude, coord.longitude, this.filterParameter.locationRange*1000)
           
         });
     } else {
@@ -268,8 +333,10 @@ export class StatsComponent {
     console.log('Map clicked at:', event);
     if (event.mapId == "locationMap") {
       this.mapService.clearMarkers(event.mapId)
-      this.mapService.recenterMap(event.mapId, event.lat, event.lng, 10)
+      this.mapService.clearCircles(event.mapId)
+      this.mapService.recenterMap(event.mapId, event.lat, event.lng)
       this.mapService.addMarker(event.mapId, event.lat, event.lng)
+      this.mapService.addCircle(event.mapId, event.lat, event.lng, this.filterParameter.locationRange*1000)
       this.filterParameter.locationCoordinates = { lat: event.lat, lng: event.lng }
     }
 
