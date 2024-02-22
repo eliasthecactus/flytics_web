@@ -281,18 +281,27 @@ export class StatsComponent {
       },
       () => {
         this.mapService.clearMarkers('flightsMap');
-        for (const flight of this.myFlights) {
-          // console.log(flight.id)
-          const flightMarker = this.mapService.addMarker('flightsMap', flight.start_lat, flight.start_long, "<div>Flight No.: #"+flight.id.toString()+"<br>Start: "+flight.start_time+"<br>Distance: "+flight.distance/1000+"km</div>");
-
-          if (flightMarker !== null) {
-            flightMarker.on('click', () => {
-              this.showFlightDetail(flight);
-            });
+        const addMarkersAsync = (flights: Flight[], index: number) => {
+          if (index < flights.length) {
+            const flight = flights[index];
+            const flightMarker = this.mapService.addMarker('flightsMap',
+            flight.start_lat,
+            flight.start_long,
+            `<div>Flight No.: #${flight.id.toString()}<br>Takeoff: ${this.datepipe.transform(this.realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset), 'medium')}<br>Distance: ${(flight.distance / 1000).toFixed(2)}km</div>`
+            );
+            if (flightMarker !== null) {
+              flightMarker.on('click', () => {
+                this.showFlightDetail(flight);
+              });
+            }
+            setTimeout(() => addMarkersAsync(flights, index + 1), 0); // Add a delay of 0 milliseconds to make it asynchronous
+          } else {
+            this.flightsLoading = false;
           }
-        }
-        this.flightsLoading = false;
+        };
+        addMarkersAsync(this.myFlights, 0);
       }
+      
     );
   }
 
