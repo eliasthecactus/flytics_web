@@ -8,7 +8,7 @@ import { AlertService } from '../../services/alert.service';
 import { MapComponent } from '../../components/map/map.component';
 import { MapService } from '../../services/map.service';
 import { RouterLink } from '@angular/router';
-import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle } from 'ng-apexcharts';
+import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle, ApexOptions } from 'ng-apexcharts';
 
 
 interface Flight {
@@ -52,6 +52,7 @@ export class StatsComponent {
     streetViewControl:false,
     // mapTypeId:google.maps.MapTypeId.HYBRID,
   };
+
 
   
   
@@ -292,6 +293,25 @@ export class StatsComponent {
             if (flightMarker !== null) {
               flightMarker.on('click', () => {
                 this.showFlightDetail(flight);
+              });
+          
+              // Add 'mouseover' event listener
+              flightMarker.on('mouseover', () => {
+                this.apiService.getFlightFile(flight.id, "geojson").subscribe(
+                  (geoJSONData) => {
+                    this.mapService.addGeoJSONLayer('flightsMap', geoJSONData);
+                  },
+                  (error) => {
+                    this.alertService.show("error", "There was an error while fetching the flight route")
+                  }
+                );
+                console.log("hover");
+              });
+          
+              // Add 'mouseout' event listener
+              flightMarker.on('mouseout', () => {
+                this.mapService.removeGeoJSONLayer('flightsMap');
+                console.log("unhover");
               });
             }
             setTimeout(() => addMarkersAsync(flights, index + 1), 0); // Add a delay of 0 milliseconds to make it asynchronous
