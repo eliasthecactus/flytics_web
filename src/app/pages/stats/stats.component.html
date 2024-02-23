@@ -1,22 +1,29 @@
 <div class="flex w-full h-full overflow-hidden flex-col">
-  <div class="flex items-center justify-end space-x-2 m-2">
+  <div class="flex items-center justify-end mx-3">
     <!-- <select class="select select-bordered block">
       <option disabled selected>Sort</option>
       <option>Han Solo</option>
       <option>Greedo</option>
     </select> -->
-    <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
-    <div class="indicator">
-      <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
-      <div class="grid place-items-center">
-        <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
+    <!-- <div class="flex">
+      <p class="text-xl font-bold">List</p>
+    </div> -->
+
+    <div class="flex items-center space-x-2">
+      <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
+      <div class="indicator">
+        <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
+        <div class="grid place-items-center">
+          <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
+        </div>
       </div>
     </div>
+
   </div>
 
 
 
-<!-- drawer down -->
+  <!-- drawer down -->
   <div class="drawer z-50">
 
     <input id="filter-drawer" type="checkbox" class="drawer-toggle" [(ngModel)]="filterOpen" />
@@ -190,7 +197,7 @@
         <h3 class="font-bold text-lg pb-4">Flight #{{currentSelectedFlight.id}}</h3>
 
 
-        <div class="h-52 w-full border-2 border-lime-400">
+        <div class="h-52 w-full">
           <app-map mapId="detailMap"></app-map>
         </div>
 
@@ -204,11 +211,12 @@
   </dialog>
   <!-- flight detail up -->
 
-  <p class="text-xs px-4">{{myFlights.length}} total</p>
+  <!-- <p class="text-xs px-4">{{myFlights.length}} total</p> -->
   <div role="tablist" class="tabs tabs-lifted m-2 overflow-hidden max-h-full">
-    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="List" checked/>
+    <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="List" checked />
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box h-full overflow-scroll">
-      <p *ngIf="myFlights.length == 0" class="p-2 text-xs">There are currently no Flights. Click <span class="link" routerLink="/add">here</span> to add one</p>
+      <p *ngIf="myFlights.length == 0" class="p-2 text-xs">There are currently no Flights. Click <span class="link"
+          routerLink="/add">here</span> to add one</p>
       <div *ngIf="myFlights.length > 0" class="h-full overflow-y-auto">
         <table class="table table-zebra table-pin-rows table-pin-cols">
           <thead>
@@ -243,7 +251,7 @@
               <td class="">
                 <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
                 <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
-    
+
                 <p>{{realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset) | date:
                   'H:mm':'GMT'}}</p>
               </td>
@@ -260,7 +268,7 @@
                 <div class="flex space-x-1">
                   <p *ngIf="(flight.duration / 3600) >= 1">{{ floorNumber(flight.duration/3600) }}h</p>
                   <p>{{((flight.duration % 3600) / 60).toFixed(0)}}min</p>
-    
+
                 </div>
                 <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
               </td>
@@ -269,18 +277,46 @@
         </table>
       </div>
     </div>
-  
+
     <input type="radio" (click)="openFlightMap()" name="my_tabs_2" role="tab" class="tab" aria-label="Map" />
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2 z-20">
       <div class="h-96">
         <app-map mapId="flightsMap" [location]="{lat: 0, lng: 0}" [zoom]="2"></app-map>
       </div>
     </div>
-  
+
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Stats" />
-    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
-      <h1>Stats</h1>
-      <p>here are some stats like a pie chart with flight per country</p>
+    <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box h-full overflow-scroll">
+      <div class="flex w-full flex-wrap justify-center">
+        <!-- <ngx-charts-bar-vertical
+        [results]="dataset"
+        [xAxisLabel]="'x-axis'"
+        [legendTitle]="'legend'"
+        [yAxisLabel]="'y-axis'"
+        [legend]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+        [gradient]="true"
+        style="fill: rgb(127, 127, 127);">
+        </ngx-charts-bar-vertical> -->
+
+        <div class="flex bg-base-200 m-2 rounded-xl shadow-xl flex-col space-y-2 p-8 w-full">
+          <p class="text-2xl font-semibold">Numbers</p>
+          <ngx-charts-number-card [view]="[500,100]" [results]="dataset2" [scheme]="'air'" [animations]="true"
+            style="fill: rgb(127, 127, 127);"></ngx-charts-number-card>
+        </div>
+
+
+        <div class="flex bg-base-200 m-2 rounded-xl shadow-xl flex-col space-y-2 p-8">
+          <p class="text-2xl font-semibold">Flights per Country</p>
+          <ngx-charts-pie-chart [results]="dataset" [scheme]="'air'" [animations]="true"
+            style="fill: rgb(127, 127, 127);" [legendTitle]="'Legend'" [legend]="true"></ngx-charts-pie-chart>
+        </div>
+
+
+      </div>
     </div>
   </div>
 

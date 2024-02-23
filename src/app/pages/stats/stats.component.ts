@@ -8,7 +8,8 @@ import { AlertService } from '../../services/alert.service';
 import { MapComponent } from '../../components/map/map.component';
 import { MapService } from '../../services/map.service';
 import { RouterLink } from '@angular/router';
-import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle, ApexOptions } from 'ng-apexcharts';
+import { NgxChartsModule }from '@swimlane/ngx-charts';
+
 
 
 interface Flight {
@@ -36,7 +37,7 @@ interface Flight {
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent, HttpClientModule, RouterLink, NgApexchartsModule],
+  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent, HttpClientModule, RouterLink, NgxChartsModule],
   providers: [DatePipe, ApiService, MapService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
@@ -90,6 +91,30 @@ export class StatsComponent {
 
   currentSelectedFlight: Partial<Flight> = {};
 
+  dataset = [
+    { name: "X", value: 1 },
+    { name: "Y", value: 4 }
+  ];
+
+  dataset2 = [
+    {
+      "name": "Flight Count",
+      "value": 8940000
+    },
+    {
+      "name": "Distance (km)",
+      "value": 5000000
+    },
+    {
+      "name": "⌀ takeoff level",
+      "value": 5000000
+    }
+    // ,
+    // {
+    //   "name": "⌀ distance (km)",
+    //   "value": 5000000
+    // }
+  ];
 
   constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
 
@@ -207,6 +232,8 @@ export class StatsComponent {
         (geoJSONData) => {
           this.mapService.removeGeoJSONLayer('detailMap');
           this.mapService.addGeoJSONLayer('detailMap', geoJSONData);
+          this.mapService.clearMarkers('detailMap');
+          this.mapService.addMarker('detailMap', flight.start_lat, flight.start_long, "Start", "black")
           this.mapService.recenterMap('detailMap', this.currentSelectedFlight.start_lat!, this.currentSelectedFlight.start_long!, 12);
           modal.showModal();
         },

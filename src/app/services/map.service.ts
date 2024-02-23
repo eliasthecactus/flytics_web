@@ -41,15 +41,18 @@ export class MapService {
   }
 
 
-  addMarker(mapId: string, lat: number, lng: number, title: any = null): L.Marker | null {
+  addMarker(mapId: string, lat: number, lng: number, title: any = null, markerColor: string = ""): L.Marker | null {
     const mapData = this.maps[mapId];
     if (mapData) {
       const marker = L.marker([lat, lng]);
+      if (markerColor != "") {
+        markerColor = "-"+markerColor
+      }
   
       const iconPath = 'assets/images/map/';
       const defaultIcon = new L.Icon({
-        iconUrl: iconPath + 'marker-icon.png',
-        iconRetinaUrl: iconPath + 'marker-icon-2x.png',
+        iconUrl: iconPath + `marker-icon${markerColor}.png`,
+        iconRetinaUrl: iconPath + `marker-icon-2x${markerColor}.png`,
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],

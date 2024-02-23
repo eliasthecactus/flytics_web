@@ -29,7 +29,6 @@
               "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
-              "node_modules/apexcharts/dist/apexcharts.min.js"
             ]
           },
           "configurations": {
@@ -91,7 +90,6 @@
               "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
-              "node_modules/apexcharts/dist/apexcharts.min.js"
             ]
           }
         }
