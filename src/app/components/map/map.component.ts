@@ -48,14 +48,18 @@ export class MapComponent implements AfterViewInit {
 
 
   private initializeMap() {
-    const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    const baseMapURl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
     const initialCenter = L.latLng(this.location.lat, this.location.lng);
   
     this.map = L.map(this.mapId, {
       center: initialCenter,
-      zoom: this.zoom
+      zoom: this.zoom,
+      attributionControl: false
     });
-    L.tileLayer(baseMapURl).addTo(this.map);
+
+    var myAttrControl = L.control.attribution().addTo(this.map);
+    myAttrControl.setPrefix('');
+    L.tileLayer(baseMapURl, {attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a>'}).addTo(this.map);
   }
 
 

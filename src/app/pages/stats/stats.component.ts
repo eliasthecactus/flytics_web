@@ -96,25 +96,16 @@ export class StatsComponent {
     { name: "Y", value: 4 }
   ];
 
-  dataset2 = [
-    {
-      "name": "Flight Count",
-      "value": 8940000
-    },
-    {
-      "name": "Distance (km)",
-      "value": 5000000
-    },
-    {
-      "name": "⌀ takeoff level",
-      "value": 5000000
-    }
-    // ,
-    // {
-    //   "name": "⌀ distance (km)",
-    //   "value": 5000000
-    // }
-  ];
+  numberCharts = [
+    [{"name": "Flight Count", "value": 0}],
+    [{"name": "Distance (km)", "value": 0}],
+    [{"name": "⌀ takeoff level", "value": 0}]
+  ]
+
+  getObjectKeys(obj: any): string[] {
+    return Object.keys(obj);
+  }
+
 
   constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
 
@@ -145,7 +136,6 @@ export class StatsComponent {
   }
 
   ngAfterViewInit() {
-
   }
 
   floorNumber(numb: number): number {
@@ -299,6 +289,8 @@ export class StatsComponent {
           this.myFlights = response.flights;
           console.log(this.myFlights)
           this.sortTable(this.sortColumn);
+          this.numberCharts[0] = [{"name": "Flight Count", "value": this.myFlights.length}]
+
         } else {
           this.alertService.show("error", response.message);
         }
