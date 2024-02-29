@@ -1,14 +1,14 @@
 import { Component, Input, OnChanges, SimpleChanges, DoCheck, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
-import { GoogleMapsModule, GoogleMap, MapMarker, MapCircle, MapKmlLayer } from '@angular/google-maps';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { MapComponent } from '../../components/map/map.component';
 import { MapService } from '../../services/map.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgxChartsModule }from '@swimlane/ngx-charts';
+
 
 
 
@@ -26,6 +26,8 @@ interface Flight {
   start_height: number;
   start_lat: number;
   start_long: number;
+  end_lat: number;
+  end_long: number;
   start_time: string;
   timezone: string;
   timezone_dst_offset: number;
@@ -37,22 +39,14 @@ interface Flight {
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, GoogleMap, MapMarker, FormsModule, DatePipe, MapCircle, MapKmlLayer, MapComponent, HttpClientModule, RouterLink, NgxChartsModule],
+  imports: [CommonModule, FormsModule, DatePipe, MapComponent, HttpClientModule, RouterLink, NgxChartsModule],
   providers: [DatePipe, ApiService, MapService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
 })
 
 export class StatsComponent {
-  marker = {
-    position: { lat: 0, lng: 0 },
-  }
-  mapOptions: google.maps.MapOptions = {
-    center: {lat: 0, lng: 0},
-    zoom: 0,
-    streetViewControl:false,
-    // mapTypeId:google.maps.MapTypeId.HYBRID,
-  };
+
 
 
   
@@ -91,6 +85,8 @@ export class StatsComponent {
 
   currentSelectedFlight: Partial<Flight> = {};
 
+  detailFlightTab: boolean = true
+
   dataset = [
     { name: "X", value: 1 },
     { name: "Y", value: 4 }
@@ -100,14 +96,143 @@ export class StatsComponent {
     [{"name": "Flight Count", "value": 0}],
     [{"name": "Distance (km)", "value": 0}],
     [{"name": "⌀ takeoff level", "value": 0}]
-  ]
+  ];
+
+
+  testset = [
+    {
+      "name": "Vanuatu",
+      "series": [
+        {
+          "value": 2917,
+          "name": "2016-09-16T03:16:31.753Z"
+        },
+        {
+          "value": 5504,
+          "name": "2016-09-21T00:39:59.820Z"
+        },
+        {
+          "value": 6740,
+          "name": "2016-09-15T12:03:02.954Z"
+        },
+        {
+          "value": 5960,
+          "name": "2016-09-23T07:47:20.805Z"
+        },
+        {
+          "value": 6880,
+          "name": "2016-09-17T20:02:32.424Z"
+        }
+      ]
+    },
+    {
+      "name": "Bouvet Island",
+      "series": [
+        {
+          "value": 4606,
+          "name": "2016-09-16T03:16:31.753Z"
+        },
+        {
+          "value": 2781,
+          "name": "2016-09-21T00:39:59.820Z"
+        },
+        {
+          "value": 2941,
+          "name": "2016-09-15T12:03:02.954Z"
+        },
+        {
+          "value": 6210,
+          "name": "2016-09-23T07:47:20.805Z"
+        },
+        {
+          "value": 2644,
+          "name": "2016-09-17T20:02:32.424Z"
+        }
+      ]
+    },
+    {
+      "name": "Jordan",
+      "series": [
+        {
+          "value": 5823,
+          "name": "2016-09-16T03:16:31.753Z"
+        },
+        {
+          "value": 6184,
+          "name": "2016-09-21T00:39:59.820Z"
+        },
+        {
+          "value": 4203,
+          "name": "2016-09-15T12:03:02.954Z"
+        },
+        {
+          "value": 4745,
+          "name": "2016-09-23T07:47:20.805Z"
+        },
+        {
+          "value": 3155,
+          "name": "2016-09-17T20:02:32.424Z"
+        }
+      ]
+    },
+    {
+      "name": "Uzbekistan",
+      "series": [
+        {
+          "value": 4836,
+          "name": "2016-09-16T03:16:31.753Z"
+        },
+        {
+          "value": 6884,
+          "name": "2016-09-21T00:39:59.820Z"
+        },
+        {
+          "value": 2756,
+          "name": "2016-09-15T12:03:02.954Z"
+        },
+        {
+          "value": 2226,
+          "name": "2016-09-23T07:47:20.805Z"
+        },
+        {
+          "value": 4803,
+          "name": "2016-09-17T20:02:32.424Z"
+        }
+      ]
+    },
+    {
+      "name": "Virgin Islands, British",
+      "series": [
+        {
+          "value": 5734,
+          "name": "2016-09-16T03:16:31.753Z"
+        },
+        {
+          "value": 2633,
+          "name": "2016-09-21T00:39:59.820Z"
+        },
+        {
+          "value": 3564,
+          "name": "2016-09-15T12:03:02.954Z"
+        },
+        {
+          "value": 3453,
+          "name": "2016-09-23T07:47:20.805Z"
+        },
+        {
+          "value": 3184,
+          "name": "2016-09-17T20:02:32.424Z"
+        }
+      ]
+    }
+  ];
 
   getObjectKeys(obj: any): string[] {
     return Object.keys(obj);
   }
 
 
-  constructor(private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
+  constructor(private router: Router ,private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
 
   }
 
@@ -194,7 +319,7 @@ export class StatsComponent {
       this.mapService.addCircle("locationMap", this.filterParameter.locationCoordinates.lat, this.filterParameter.locationCoordinates.lng, this.filterParameter.locationRange*1000)
 
       this.loadFLights();
-      this.cdr.detectChanges();
+      // this.cdr.detectChanges();
     }
   
     // Update the previous state for the next check
@@ -241,6 +366,29 @@ export class StatsComponent {
       // this.mapService.recenterMap("detailMap", this.currentSelectedFlight.start_lat!, this.currentSelectedFlight.start_long!, 12);
       // modal.showModal();
     }
+  }
+
+  deleteFlight(flight_id: number) {
+    this.apiService.deleteFlight(flight_id).subscribe(
+      (response) => {
+        console.log(response)
+        if (response.code == 0) {
+          const modal = document.getElementById('flightDetailModal') as HTMLDialogElement | null;
+          if (modal) {
+            modal.close();
+          }
+          this.alertService.show("success", 'Flight #'+flight_id+' deleted successfully');
+          this.loadFLights()
+        } else {
+          this.alertService.show("error", "There was an error while deleting the flight: "+response.message)
+        }
+      },
+      (error) => {
+        this.alertService.show("error", "There was an error while opening the flight")
+        console.error('Error deleting flight:', error);
+        // Handle error appropriately, e.g., show an error message
+      }
+    );
   }
 
 
@@ -318,6 +466,7 @@ export class StatsComponent {
               flightMarker.on('mouseover', () => {
                 this.apiService.getFlightFile(flight.id, "geojson").subscribe(
                   (geoJSONData) => {
+                    this.mapService.removeGeoJSONLayer('flightsMap');
                     this.mapService.addGeoJSONLayer('flightsMap', geoJSONData);
                   },
                   (error) => {
@@ -329,7 +478,7 @@ export class StatsComponent {
           
               // Add 'mouseout' event listener
               flightMarker.on('mouseout', () => {
-                this.mapService.removeGeoJSONLayer('flightsMap');
+                // this.mapService.removeGeoJSONLayer('flightsMap');
                 console.log("unhover");
               });
             }

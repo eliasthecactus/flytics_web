@@ -114,13 +114,7 @@
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Location</p>
                   <div class="h-32 w-full">
-                    <!-- <google-map id="map" width="100%" height="100%" [options]="mapOptions"
-                      (mapClick)="changeLocation($event)">
-                      <map-marker [position]="marker.position" />
-                      <map-circle [center]="marker.position" [radius]="filterParameter.locationRange*1000" />
-                    </google-map> -->
                     <app-map mapId="locationMap" (mapClick)="handleMapClick($event)"></app-map>
-                    <!-- <app-map></app-map> -->
                   </div>
                 </div>
 
@@ -201,23 +195,138 @@
           <app-map mapId="detailMap"></app-map>
         </div>
 
-        <div class="flex justify-between items-center py-2">
-          <div class="flex items-center space-x-2">
-            <select class="select select-bordered max-w-xs">
-              <option disabled selected>Select file type</option>
-              <option>KML</option>
-              <option>IGC</option>
-              <option>GeoJSON</option>
-            </select>
-            <button class="btn">Download</button>
+        <div class="flex h-52 w-full">
+          <ngx-charts-line-chart [results]="testset" [scheme]="'air'" [animations]="false" style="fill: rgb(127, 127, 127);" [legend]="false"></ngx-charts-line-chart>
+        </div>
+
+        <div role="tablist" class="tabs tabs-boxed my-2">
+          <a role="tab" class="tab" [ngClass]="detailFlightTab ? 'tab-active' : ''" (click)="detailFlightTab = !detailFlightTab">Information</a>
+          <a role="tab" class="tab" [ngClass]="detailFlightTab ? '' : 'tab-active'" (click)="detailFlightTab = !detailFlightTab">Actions</a>
+        </div>
+
+
+        <div *ngIf="detailFlightTab">
+          <div class="flex justify-between items-center py-2">
+            <div class="overflow-x-auto w-full">
+              <table class="table table-xs">
+                <thead>
+                  <tr>
+                    <th class="w-4/12">General</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Country</td>
+                    <td>{{currentSelectedFlight.country}}</td>
+                  </tr>
+                  <tr>
+                    <td>Location</td>
+                    <td>{{currentSelectedFlight.location}}</td>
+                  </tr>
+                  <tr>
+                    <td>Date</td>
+                    <td>{{currentSelectedFlight.start_time | date:'dd. MMMM yyyy'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Duration</td>
+                    <td class="flex space-x-1">
+                      <p *ngIf="(currentSelectedFlight && currentSelectedFlight.duration! / 3600) >= 1">{{ currentSelectedFlight ? floorNumber(currentSelectedFlight.duration!/3600) :'N/A' }}h</p><p>{{currentSelectedFlight ? ((currentSelectedFlight.duration! % 3600) / 60).toFixed(0) : 'N/A'}}min</p>
+                    <!-- {{ currentSelectedFlight.start_time ? currentSelectedFlight.duration : 'N/A'}}</td> -->
+                  </tr>
+                  <tr>
+                    <td>Timezone</td>
+                    <td>
+                      {{ currentSelectedFlight.timezone ? currentSelectedFlight.timezone : 'N/A'}}
+                      <span *ngIf="currentSelectedFlight && currentSelectedFlight.timezone_dst_offset! + currentSelectedFlight.timezone_raw_offset! != 0" class="opacity-60">
+                        {{currentSelectedFlight ? (currentSelectedFlight.timezone_dst_offset! + currentSelectedFlight.timezone_raw_offset!) > 0 ? "+" : "": ''}}{{currentSelectedFlight ? (currentSelectedFlight.timezone_dst_offset! + currentSelectedFlight.timezone_raw_offset!) / 3600+"h" : 'N/A'}}
+                    </span>
+                  </td>
+                  </tr>
+                  <tr>
+                    <td>⌀ Speed</td>
+                    <td>{{ currentSelectedFlight.distance && currentSelectedFlight.duration ? ((currentSelectedFlight.distance/1000) / (currentSelectedFlight.duration!/3600)).toFixed(1)+"km/h" : 'N/A'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Distance</td>
+                    <td>{{ currentSelectedFlight.distance ? (currentSelectedFlight.distance / 1000).toFixed(2) : 'N/A' }} km</td>
+                  </tr>
+                </tbody>
+              </table>
+              <br>
+
+              <table class="table table-xs">
+                <thead>
+                  <tr>
+                    <th class="w-4/12">Start</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Time</td>
+                    <td>{{currentSelectedFlight.start_time ? (realDateTime(currentSelectedFlight.start_time, currentSelectedFlight.timezone_raw_offset!, currentSelectedFlight.timezone_dst_offset!) | date:'H:mm':'GMT') : 'N/A'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Coordinates</td>
+                    <td>{{currentSelectedFlight.start_lat}}, {{currentSelectedFlight.start_long}} <a href="https://www.google.com/maps/@{{currentSelectedFlight.start_lat}},{{currentSelectedFlight.start_long}}" target="_blank" title="Show on Google Maps" class="text-xs"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></td>
+                  </tr>
+                  <tr>
+                    <td>Height</td>
+                    <td>{{currentSelectedFlight.start_height}} MASL</td>
+                  </tr>
+                </tbody>
+              </table>
+              <br>
+
+              <table class="table table-xs">
+                <thead>
+                  <tr>
+                    <th class="w-4/12">End</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Time</td>
+                    <td>{{currentSelectedFlight.start_time ? (realDateTime(currentSelectedFlight.start_time, currentSelectedFlight.timezone_raw_offset!, currentSelectedFlight.timezone_dst_offset!+currentSelectedFlight.duration!) | date:'H:mm':'GMT') : 'N/A'}}</td>
+                  </tr>
+                  <tr>
+                    <td>Coordinates</td>
+                    <td>{{currentSelectedFlight.end_lat}}, {{currentSelectedFlight.end_long}} <a href="https://www.google.com/maps/@{{currentSelectedFlight.end_lat}},{{currentSelectedFlight.end_long}}" target="_blank" title="Show on Google Maps"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></td>
+                  </tr>
+                  <tr>
+                    <td>Height</td>
+                    <td>{{currentSelectedFlight.end_height}} MASL</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <button><i class="fa-solid fa-trash"></i></button>
+        </div>
+
+        <div *ngIf="!detailFlightTab">
+          <div class="flex justify-between items-center py-2">
+            <div class="flex items-center space-x-2">
+              <select class="select select-bordered max-w-xs">
+                <option disabled selected>Select file type</option>
+                <option>KML</option>
+                <option>IGC</option>
+                <option>GeoJSON</option>
+              </select>
+              <button class="btn">Download</button>
+            </div>
+          </div>
+          <button (click)="deleteFlight(currentSelectedFlight!.id ?? 0)" class="btn"><i class="fa-solid fa-trash"></i> Delete Flight</button>
         </div>
 
 
 
 
-        <p class="py-4">Press ESC key or click on ✕ button to close</p>
+
+
+
+
       </div>
 
     </div>
@@ -315,7 +424,7 @@
         style="fill: rgb(127, 127, 127);">
         </ngx-charts-bar-vertical> -->
 
-        <div class="flex rounded-xl shadow-xl flex-col space-y-2 p-4 w-full">
+        <div class="flex rounded-xl flex-col space-y-2 p-4 w-full">
           <p class="text-2xl font-semibold">Numbers</p>
           <div class="flex w-full overflow-x-scroll">
             <div class="w-full sm:w-6/12 xl:w-4/12 h-52" *ngFor="let chart of numberCharts; let i = index">
@@ -326,11 +435,12 @@
         </div>
 
 
-        <div class="flex bg-base-200 m-2 rounded-xl shadow-xl flex-col space-y-2 p-8">
+        <div class="flex bg-base-200 m-2 rounded-xl flex-col space-y-2 p-8">
           <p class="text-2xl font-semibold">Flights per Country</p>
           <ngx-charts-pie-chart [results]="dataset" [scheme]="'air'" [animations]="true"
             style="fill: rgb(127, 127, 127);" [legendTitle]="'Legend'" [legend]="true"></ngx-charts-pie-chart>
         </div>
+
 
 
       </div>
@@ -338,4 +448,12 @@
   </div>
 
 
+</div>
+
+
+<div *ngIf="alertService.showAlert" class="fixed top-4 right-4 z-50">
+  <div role="alert" [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}" class="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>{{ alertService.alertMessage}}</span>
+    </div>
 </div>

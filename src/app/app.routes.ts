@@ -27,7 +27,8 @@ export const routes: Routes = [
         {path: '', redirectTo: 'overview', pathMatch: 'full'},
         {path: 'overview', component: OverviewComponent},
         {path: 'stats', component: StatsComponent},
-        {path: 'feed', component: FeedComponent}
+        {path: 'feed', component: FeedComponent},
+        {path: '**', redirectTo: 'overview'}
     ]},
     { path: 'add', component: AddFlightComponent },
     // { path: 'settings', component: SettingsComponent },
