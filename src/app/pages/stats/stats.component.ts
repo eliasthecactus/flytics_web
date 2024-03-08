@@ -2,44 +2,24 @@ import { Component, Input, OnChanges, SimpleChanges, DoCheck, ChangeDetectorRef 
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { HttpClientModule } from '@angular/common/http';
 import { AlertService } from '../../services/alert.service';
 import { MapComponent } from '../../components/map/map.component';
 import { MapService } from '../../services/map.service';
 import { Router, RouterLink } from '@angular/router';
-import { NgxChartsModule }from '@swimlane/ngx-charts';
+import { NgxChartsModule, LegendPosition }from '@swimlane/ngx-charts';
+import { FunctionsService } from '../../services/functions.service';
+import { flush } from '@angular/core/testing';
+import { Flight } from '../../modules/flight/flight.module';
 
 
 
 
-interface Flight {
-  id: number;
-  country: string;
-  country_code: string;
-  distance: number;
-  duration: number;
-  end_height: number;
-  igc_sum: string;
-  info: null | any;
-  location: string;
-  public: boolean;
-  start_height: number;
-  start_lat: number;
-  start_long: number;
-  end_lat: number;
-  end_long: number;
-  start_time: string;
-  timezone: string;
-  timezone_dst_offset: number;
-  timezone_raw_offset: number;
-  uploaded: string;
-  user: number;
-}
+
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, MapComponent, HttpClientModule, RouterLink, NgxChartsModule],
+  imports: [CommonModule, FormsModule, DatePipe, MapComponent, RouterLink, NgxChartsModule],
   providers: [DatePipe, ApiService, MapService],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css',
@@ -87,153 +67,57 @@ export class StatsComponent {
 
   detailFlightTab: boolean = true
 
-  dataset = [
-    { name: "X", value: 1 },
-    { name: "Y", value: 4 }
-  ];
 
-  numberCharts = [
+  statsData = [
     [{"name": "Flight Count", "value": 0}],
     [{"name": "Distance (km)", "value": 0}],
     [{"name": "⌀ takeoff level", "value": 0}]
   ];
 
+  legendBelow: LegendPosition = LegendPosition.Below
 
-  testset = [
-    {
-      "name": "Vanuatu",
-      "series": [
-        {
-          "value": 2917,
-          "name": "2016-09-16T03:16:31.753Z"
-        },
-        {
-          "value": 5504,
-          "name": "2016-09-21T00:39:59.820Z"
-        },
-        {
-          "value": 6740,
-          "name": "2016-09-15T12:03:02.954Z"
-        },
-        {
-          "value": 5960,
-          "name": "2016-09-23T07:47:20.805Z"
-        },
-        {
-          "value": 6880,
-          "name": "2016-09-17T20:02:32.424Z"
-        }
-      ]
-    },
-    {
-      "name": "Bouvet Island",
-      "series": [
-        {
-          "value": 4606,
-          "name": "2016-09-16T03:16:31.753Z"
-        },
-        {
-          "value": 2781,
-          "name": "2016-09-21T00:39:59.820Z"
-        },
-        {
-          "value": 2941,
-          "name": "2016-09-15T12:03:02.954Z"
-        },
-        {
-          "value": 6210,
-          "name": "2016-09-23T07:47:20.805Z"
-        },
-        {
-          "value": 2644,
-          "name": "2016-09-17T20:02:32.424Z"
-        }
-      ]
-    },
-    {
-      "name": "Jordan",
-      "series": [
-        {
-          "value": 5823,
-          "name": "2016-09-16T03:16:31.753Z"
-        },
-        {
-          "value": 6184,
-          "name": "2016-09-21T00:39:59.820Z"
-        },
-        {
-          "value": 4203,
-          "name": "2016-09-15T12:03:02.954Z"
-        },
-        {
-          "value": 4745,
-          "name": "2016-09-23T07:47:20.805Z"
-        },
-        {
-          "value": 3155,
-          "name": "2016-09-17T20:02:32.424Z"
-        }
-      ]
-    },
-    {
-      "name": "Uzbekistan",
-      "series": [
-        {
-          "value": 4836,
-          "name": "2016-09-16T03:16:31.753Z"
-        },
-        {
-          "value": 6884,
-          "name": "2016-09-21T00:39:59.820Z"
-        },
-        {
-          "value": 2756,
-          "name": "2016-09-15T12:03:02.954Z"
-        },
-        {
-          "value": 2226,
-          "name": "2016-09-23T07:47:20.805Z"
-        },
-        {
-          "value": 4803,
-          "name": "2016-09-17T20:02:32.424Z"
-        }
-      ]
-    },
-    {
-      "name": "Virgin Islands, British",
-      "series": [
-        {
-          "value": 5734,
-          "name": "2016-09-16T03:16:31.753Z"
-        },
-        {
-          "value": 2633,
-          "name": "2016-09-21T00:39:59.820Z"
-        },
-        {
-          "value": 3564,
-          "name": "2016-09-15T12:03:02.954Z"
-        },
-        {
-          "value": 3453,
-          "name": "2016-09-23T07:47:20.805Z"
-        },
-        {
-          "value": 3184,
-          "name": "2016-09-17T20:02:32.424Z"
-        }
-      ]
-    }
-  ];
+  detailFlightCoordinates = [];
+  detailFlightHeightProfile: any[] = [];
+  detailFlightHeightProfileLoaded: boolean = false;
+  
+
 
   getObjectKeys(obj: any): string[] {
     return Object.keys(obj);
   }
 
 
-  constructor(private router: Router ,private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService) {
+  constructor(private router: Router ,private datepipe: DatePipe, private cdr: ChangeDetectorRef, private apiService: ApiService, public alertService: AlertService, private mapService: MapService, public functions: FunctionsService) {
 
+  }
+
+
+  formatTime = (val: number) => {
+    return val+"%"
+  }
+
+
+
+  compareFlight(flightId: number) {
+    // console.log("Compare Flight Nr. "+flightId)
+    this.router.navigate(['/compare'])
+  }
+
+  downloadFlight(flightId: number, fileType: string) {
+    this.apiService.downloadFlightFile(flightId, fileType)
+    .subscribe((data: any) => {
+        // Handle binary data (e.g., file download)
+        const blob = new Blob([data], { type: 'application/octet-stream' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = `flight_${flightId}.${fileType.toLowerCase()}`;
+        link.click();
+        this.alertService.show("success", "Flight downloaded successfully");
+    }, error => {
+      // Handle error if needed
+      this.alertService.show("error", "There was an error while downloading the flight");
+      console.error('Error downloading file', error);
+    });
   }
 
   // Function to handle sorting
@@ -261,6 +145,7 @@ export class StatsComponent {
   }
 
   ngAfterViewInit() {
+
   }
 
   floorNumber(numb: number): number {
@@ -277,7 +162,7 @@ export class StatsComponent {
 
 
   clearFilter() {
-    console.log("clear filter")
+    // console.log("clear filter")
     this.filterParameter = { ...this.originalFilter };
 
   }
@@ -314,7 +199,7 @@ export class StatsComponent {
 
     // Add more checks for other properties as needed
     if (hasFromDateChanged || hasToDateChanged || hasLocationBoolChanged || hasLocationRangeChanged || hasFormatedFromDateChanged || hasFormatedToDateChanged || hasLocationCoordinatesChanged || hasDistanceMinBoolChanged || hasDistanceMaxBoolChanged || hasDistanceMinChanged || hasDistanceMaxChanged) {
-      console.log(this.filterParameter);
+      // console.log(this.filterParameter);
       this.mapService.clearCircles("locationMap")
       this.mapService.addCircle("locationMap", this.filterParameter.locationCoordinates.lat, this.filterParameter.locationCoordinates.lng, this.filterParameter.locationRange*1000)
 
@@ -350,7 +235,32 @@ export class StatsComponent {
           this.mapService.clearMarkers('detailMap');
           this.mapService.addMarker('detailMap', flight.start_lat, flight.start_long, "Start", "black")
           this.mapService.recenterMap('detailMap', this.currentSelectedFlight.start_lat!, this.currentSelectedFlight.start_long!, 12);
-          modal.showModal();
+          this.detailFlightCoordinates = geoJSONData['features'][0]['geometry']['coordinates'];
+
+          var tempList = []
+          for (let i = 0; i < this.detailFlightCoordinates.length; i++) {
+            const altitude = this.detailFlightCoordinates[i][2];
+            // this.detailFlightHeightProfile.push(altitude);
+            tempList.push({value: altitude, name: i.toString()})
+          }
+          // this.detailFlightHeightProfile.push({name: "Height Profile", series: tempList})
+          this.detailFlightHeightProfile = [{name: "Height Profile", series: tempList}]
+
+          this.detailFlightHeightProfile = [...this.detailFlightHeightProfile];
+
+          // testset = [
+          //   {
+          //     "name": "Uzbekistan",
+          //     "series": [
+          //       {
+          //         "value": 4836,
+          //         "name": "1"
+          //       },
+
+          // console.log(this.detailFlightHeightProfile)
+          this.detailFlightHeightProfileLoaded = true;
+
+        modal.showModal();
         },
         (error) => {
           this.alertService.show("error", "There was an error while opening the flight")
@@ -371,7 +281,7 @@ export class StatsComponent {
   deleteFlight(flight_id: number) {
     this.apiService.deleteFlight(flight_id).subscribe(
       (response) => {
-        console.log(response)
+        // console.log(response)
         if (response.code == 0) {
           const modal = document.getElementById('flightDetailModal') as HTMLDialogElement | null;
           if (modal) {
@@ -435,10 +345,9 @@ export class StatsComponent {
         // console.log(response);
         if (response.code == 0) {
           this.myFlights = response.flights;
-          console.log(this.myFlights)
+          // console.log(this.myFlights)
           this.sortTable(this.sortColumn);
-          this.numberCharts[0] = [{"name": "Flight Count", "value": this.myFlights.length}]
-
+          this.statsData[0] = [{"name": "Flight Count", "value": this.myFlights.length}]
         } else {
           this.alertService.show("error", response.message);
         }
@@ -473,13 +382,13 @@ export class StatsComponent {
                     this.alertService.show("error", "There was an error while fetching the flight route")
                   }
                 );
-                console.log("hover");
+                // console.log("hover");
               });
           
               // Add 'mouseout' event listener
               flightMarker.on('mouseout', () => {
                 // this.mapService.removeGeoJSONLayer('flightsMap');
-                console.log("unhover");
+                // console.log("unhover");
               });
             }
             setTimeout(() => addMarkersAsync(flights, index + 1), 0); // Add a delay of 0 milliseconds to make it asynchronous
@@ -515,7 +424,7 @@ export class StatsComponent {
           // this.mapOptions.center = {lat: 46, lng: 46};
           this.filterParameter.locationCoordinates.lat = coord.latitude;
           this.filterParameter.locationCoordinates.lng = coord.longitude;
-          console.log(this.filterParameter)
+          // console.log(this.filterParameter)
           this.mapService.recenterMap('locationMap', coord.latitude, coord.longitude, 10);
           this.mapService.addMarker('locationMap', coord.latitude, coord.longitude)
           this.mapService.addCircle('locationMap', coord.latitude, coord.longitude, this.filterParameter.locationRange*1000)
@@ -527,7 +436,7 @@ export class StatsComponent {
   }
 
   handleMapClick(event: any): void {
-    console.log('Map clicked at:', event);
+    // console.log('Map clicked at:', event);
     if (event.mapId == "locationMap") {
       this.mapService.clearMarkers(event.mapId)
       this.mapService.clearCircles(event.mapId)

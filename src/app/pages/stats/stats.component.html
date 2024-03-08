@@ -195,9 +195,6 @@
           <app-map mapId="detailMap"></app-map>
         </div>
 
-        <div class="flex h-52 w-full">
-          <ngx-charts-line-chart [results]="testset" [scheme]="'air'" [animations]="false" style="fill: rgb(127, 127, 127);" [legend]="false"></ngx-charts-line-chart>
-        </div>
 
         <div role="tablist" class="tabs tabs-boxed my-2">
           <a role="tab" class="tab" [ngClass]="detailFlightTab ? 'tab-active' : ''" (click)="detailFlightTab = !detailFlightTab">Information</a>
@@ -206,6 +203,8 @@
 
 
         <div *ngIf="detailFlightTab">
+
+          
           <div class="flex justify-between items-center py-2">
             <div class="overflow-x-auto w-full">
               <table class="table table-xs">
@@ -244,12 +243,29 @@
                   </td>
                   </tr>
                   <tr>
-                    <td>⌀ Speed</td>
-                    <td>{{ currentSelectedFlight.distance && currentSelectedFlight.duration ? ((currentSelectedFlight.distance/1000) / (currentSelectedFlight.duration!/3600)).toFixed(1)+"km/h" : 'N/A'}}</td>
-                  </tr>
-                  <tr>
                     <td>Distance</td>
                     <td>{{ currentSelectedFlight.distance ? (currentSelectedFlight.distance / 1000).toFixed(2) : 'N/A' }} km</td>
+                  </tr>
+                  <tr>
+                    <td>Air Distance</td>
+                    <td>{{ currentSelectedFlight ? ( (functions.calculateDistance(currentSelectedFlight.start_lat!, currentSelectedFlight.start_long!, currentSelectedFlight.end_lat!, currentSelectedFlight.end_long!) /1000).toFixed(2)) : 'N/A' }} km</td>
+                  </tr>
+                  <tr>
+                    <td>⌀ Speed</td>
+                    <td>{{ currentSelectedFlight.distance && currentSelectedFlight.duration ? ((currentSelectedFlight.distance/1000) / (currentSelectedFlight.duration!/3600)).toFixed(1)+" km/h" : 'N/A'}}</td>
+                  </tr>
+                  <tr>
+                    <!-- tbd vorzeichen -->
+                    <td>Δ Height</td>
+                    <td>{{ currentSelectedFlight ? (currentSelectedFlight.start_height! - currentSelectedFlight.end_height!).toFixed(0) : 'N/A' }} m</td>
+                  </tr>
+                  <tr>
+                    <td>Max Height</td>
+                    <td>{{ currentSelectedFlight ? currentSelectedFlight.max_height : 'N/A' }} MASL</td>
+                  </tr>
+                  <tr>
+                    <td>Min Height</td>
+                    <td>{{ currentSelectedFlight ? currentSelectedFlight.min_height : 'N/A' }} MASL</td>
                   </tr>
                 </tbody>
               </table>
@@ -303,11 +319,32 @@
               </table>
             </div>
           </div>
+          <br>
+
+          <table class="table table-xs">
+            <thead>
+              <tr>
+                <th class="w-4/12">Height Profile</th>
+              </tr>
+            </thead>
+            <tr>
+              <td>
+
+              </td>
+            </tr>
+            <tbody class="w-full">
+              <div class="flex h-52 w-full justify-center my-2 items-center flex-col">
+                <ngx-charts-line-chart [tooltipDisabled]="true" [showGridLines]="true" [xAxis]="false" [wrapTicks]="true" [yAxis]="true" [results]="detailFlightHeightProfile" [scheme]="'air'" [animations]="false" style="fill: rgb(127, 127, 127);" [legend]="false" [legendPosition]="legendBelow" [autoScale]="true"></ngx-charts-line-chart>
+              </div>
+            </tbody>
+          </table>
+
+
         </div>
 
         <div *ngIf="!detailFlightTab">
-          <div class="flex justify-between items-center py-2">
-            <div class="flex items-center space-x-2">
+          <div class="flex py-2 flex-col space-y-4">
+            <!-- <div class="flex items-center space-x-2">
               <select class="select select-bordered max-w-xs">
                 <option disabled selected>Select file type</option>
                 <option>KML</option>
@@ -315,9 +352,23 @@
                 <option>GeoJSON</option>
               </select>
               <button class="btn">Download</button>
+            </div> -->
+
+
+            <div class="flex justify-between items-center">
+              <p>Download flight</p>
+              <div class="join">
+                <span (click)="downloadFlight(currentSelectedFlight.id!,'kml')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">KML</span>
+                <span (click)="downloadFlight(currentSelectedFlight.id!, 'geojson')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">GeoJSON</span>
+                <span (click)="downloadFlight(currentSelectedFlight.id!, 'igc')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">IGC</span>
+              </div>
             </div>
+  
+            <button (click)="compareFlight(currentSelectedFlight.id!)" class="btn"><i class="fa-solid fa-code-compare"></i> Compare to another flight</button>
+            <button (click)="deleteFlight(currentSelectedFlight!.id ?? 0)" class="btn btn-error"><i class="fa-solid fa-trash"></i> Delete Flight</button>
+
+
           </div>
-          <button (click)="deleteFlight(currentSelectedFlight!.id ?? 0)" class="btn"><i class="fa-solid fa-trash"></i> Delete Flight</button>
         </div>
 
 
@@ -343,7 +394,7 @@
         <table class="table table-zebra table-pin-rows table-pin-cols">
           <thead>
             <tr>
-              <!-- <th></th> -->
+              <th></th>
               <td (click)="sortTable('start_time')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_time'">
                 Date <i class="fa-solid fa-chevron-down"
                   *ngIf="sortColumn === 'start_time' && sortDirection === 'desc'"></i>
@@ -364,12 +415,32 @@
                   *ngIf="sortColumn === 'duration' && sortDirection === 'desc'"></i>
                 <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'duration' && sortDirection === 'asc'"></i>
               </td>
+              <td (click)="sortTable('start_height')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_height'">
+                Start Height <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'start_height' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'start_height' && sortDirection === 'asc'"></i>
+              </td>
+              <td (click)="sortTable('end_height')" class="cursor-pointer" [class.sorted]="sortColumn === 'end_height'">
+                End Height <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'end_height' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'end_height' && sortDirection === 'asc'"></i>
+              </td>
+              <td (click)="sortTable('min_height')" class="cursor-pointer" [class.sorted]="sortColumn === 'min_height'">
+                Min Height <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'min_height' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'min_height' && sortDirection === 'asc'"></i>
+              </td>
+              <td (click)="sortTable('max_height')" class="cursor-pointer" [class.sorted]="sortColumn === 'max_height'">
+                Max Height <i class="fa-solid fa-chevron-down"
+                  *ngIf="sortColumn === 'max_height' && sortDirection === 'desc'"></i>
+                <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'max_height' && sortDirection === 'asc'"></i>
+              </td>
             </tr>
           </thead>
           <tbody class="">
             <tr class="hover cursor-pointer" *ngFor="let flight of myFlights; let i = index"
               (click)="showFlightDetail(flight)">
-              <!-- <th>{{i}}</th> -->
+              <th class="text-xs">#{{flight.id}}</th>
               <td class="">
                 <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
                 <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
@@ -394,6 +465,26 @@
                 </div>
                 <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
               </td>
+              <td>
+                <div class="flex space-x-1">
+                  <p>{{ flight.start_height }}</p>
+                </div>
+              </td>
+              <td>
+                <div class="flex space-x-1">
+                  <p>{{ flight.end_height }}</p>
+                </div>
+              </td>
+              <td>
+                <div class="flex space-x-1">
+                  <p>{{ flight.min_height }}</p>
+                </div>
+              </td>
+              <td>
+                <div class="flex space-x-1">
+                  <p>{{ flight.max_height }}</p>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -410,35 +501,15 @@
     <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Stats" />
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box h-full overflow-scroll">
       <div class="flex w-full flex-wrap justify-center p-2">
-        <!-- <ngx-charts-bar-vertical
-        [results]="dataset"
-        [xAxisLabel]="'x-axis'"
-        [legendTitle]="'legend'"
-        [yAxisLabel]="'y-axis'"
-        [legend]="true"
-        [showXAxisLabel]="true"
-        [showYAxisLabel]="true"
-        [xAxis]="true"
-        [yAxis]="true"
-        [gradient]="true"
-        style="fill: rgb(127, 127, 127);">
-        </ngx-charts-bar-vertical> -->
 
         <div class="flex rounded-xl flex-col space-y-2 p-4 w-full">
           <p class="text-2xl font-semibold">Numbers</p>
-          <div class="flex w-full overflow-x-scroll">
-            <div class="w-full sm:w-6/12 xl:w-4/12 h-52" *ngFor="let chart of numberCharts; let i = index">
+          <div class="flex w-full flex-wrap">
+            <div class="w-full sm:w-6/12 xl:w-4/12 2xl:2/12 h-52" *ngFor="let chart of statsData; let i = index">
               <ngx-charts-number-card [results]="chart" [scheme]="'air'" [animations]="true"
               style="fill: rgb(127, 127, 127);"></ngx-charts-number-card>
             </div>
           </div>
-        </div>
-
-
-        <div class="flex bg-base-200 m-2 rounded-xl flex-col space-y-2 p-8">
-          <p class="text-2xl font-semibold">Flights per Country</p>
-          <ngx-charts-pie-chart [results]="dataset" [scheme]="'air'" [animations]="true"
-            style="fill: rgb(127, 127, 127);" [legendTitle]="'Legend'" [legend]="true"></ngx-charts-pie-chart>
         </div>
 
 

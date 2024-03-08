@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
 import { AlertService } from '../../services/alert.service';
 import { forkJoin, tap } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { Route, RouterLink, Router } from '@angular/router';
 
 
 interface uploadState {
@@ -18,7 +18,7 @@ interface uploadState {
 @Component({
   selector: 'app-add-flight',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './add-flight.component.html',
   providers: [TokenCheckerService, ApiService],
   styleUrl: './add-flight.component.css'
@@ -27,8 +27,11 @@ export class AddFlightComponent {
   constructor(
     private tokenChecker: TokenCheckerService,
     private apiService: ApiService,
-    public alertService: AlertService
-  ) {}
+    public alertService: AlertService,
+    private router: Router
+  ) {
+    this.tokenChecker.redirectToLoginIfExpired();
+  }
 
   folderUpload: boolean = false;
   igcFiles: File[] = [];
@@ -57,7 +60,7 @@ export class AddFlightComponent {
   }
 
   ngOnInit() {
-    this.tokenChecker.redirectToLoginIfExpired();
+    
   }
 
   addFlight() {
@@ -98,5 +101,6 @@ export class AddFlightComponent {
 
   cancelAddFlight() {
     window.history.back();
+    // this.router.navigate(['/dashboard'])
   }
 }

@@ -1,0 +1,31 @@
+<div class="flex flex-col w-full min-h-screen justify-center items-center">
+    <div class="flex w-full justify-between p-3 items-center">
+
+            <a class="btn btn-ghost text-xl">Flytics</a>
+        <div class="flex space-x-2">
+            <!-- <a class="btn btn-primary"><span class="loading loading-spinner"></span>Upload</a> -->
+            <a (click)="closeCompare()" class="btn">Cancel</a>
+        </div>
+    </div>
+
+    <div class="flex h-full flex-col justify-center py-10 space-y-4 flex-grow">
+
+    </div>
+
+
+</div>
+<div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
+    <div role="alert"
+        [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}" class="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ alertService.alertMessage}}</span>
+    </div>
+</div>
+
+<div *ngIf="!isReady" class="fixed flex justify-center items-center z-20 top-0 left-0 w-screen h-screen space-x-2 bg-black opacity-80">
+    <span class="loading loading-spinner"></span>
+    <p>Please wait...</p>
+
+</div>

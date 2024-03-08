@@ -7,7 +7,6 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AddFlightComponent } from './pages/add-flight/add-flight.component';
 import { AccountComponent } from './pages/account/account.component';
-import { SettingsComponent } from './pages/settings/settings.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { CookiePolicyComponent } from './pages/cookie-policy/cookie-policy.component';
@@ -16,6 +15,7 @@ import { OverviewComponent } from './pages/overview/overview.component';
 import { StatsComponent } from './pages/stats/stats.component';
 import { FeedComponent } from './pages/feed/feed.component';
 import { MapComponent } from './components/map/map.component';
+import { CompareComponent } from './pages/compare/compare.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -31,6 +31,7 @@ export const routes: Routes = [
         {path: '**', redirectTo: 'overview'}
     ]},
     { path: 'add', component: AddFlightComponent },
+    { path: 'compare', component: CompareComponent },
     // { path: 'settings', component: SettingsComponent },
     { path: 'account', component: AccountComponent },
     { path: 'tou', component: TermsOfUseComponent },

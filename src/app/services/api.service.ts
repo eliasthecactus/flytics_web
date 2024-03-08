@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -123,6 +123,18 @@ export class ApiService {
   getFlightFile(flight_id: Number, fileType?: string): Observable<any> {
     const headers = this.getHeaders();
     const options = { headers };
+
+    var parameter = ""
+
+    if (fileType) {
+      parameter += "?type="+fileType
+    }
+    return this.http.get(`${this.apiUrl}/api/flights/${flight_id}/download`+parameter, options);
+  }
+
+  downloadFlightFile(flight_id: Number, fileType?: string): Observable<any> {
+    const headers = this.getHeaders();
+    const options = { headers, responseType: 'blob' as 'json' };
 
     var parameter = ""
 

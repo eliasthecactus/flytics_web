@@ -28,11 +28,11 @@ export class LoginComponent {
   
 
   constructor(private apiService: ApiService, public alertService: AlertService, private cookieService: CookieService, private router: Router, private tokenChecker: TokenCheckerService) {
+    this.tokenChecker.redirectToDashboardIfLoggedin();
 
   }
 
   ngOnInit() {
-    this.tokenChecker.redirectToDashboardIfLoggedin();
   }
 
   
