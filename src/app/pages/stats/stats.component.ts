@@ -8,7 +8,6 @@ import { MapService } from '../../services/map.service';
 import { Router, RouterLink } from '@angular/router';
 import { NgxChartsModule, LegendPosition }from '@swimlane/ngx-charts';
 import { FunctionsService } from '../../services/functions.service';
-import { flush } from '@angular/core/testing';
 import { Flight } from '../../modules/flight/flight.module';
 
 
@@ -97,6 +96,10 @@ export class StatsComponent {
   compareFlight(flightId: number) {
     // console.log("Compare Flight Nr. "+flightId)
     this.router.navigate(['/compare'])
+  }
+
+  onSelect(event: any) {
+    console.log(event);
   }
 
   downloadFlight(flightId: number, fileType: string) {
@@ -343,7 +346,14 @@ export class StatsComponent {
           this.myFlights = response.flights;
           // console.log(this.myFlights)
           this.sortTable(this.sortColumn);
+          this.statsData = [];
           this.statsData.push([{"name": "Flight Count", "value": this.myFlights.length}])
+          var flightDistance = 0;
+          for (const flight of this.myFlights) {
+            flightDistance += flight.distance;
+          }
+          this.statsData.push([{"name": "Total Distance (km)", "value": parseInt((flightDistance/1000).toFixed(0))}])
+
         } else {
           this.alertService.show("error", response.message);
         }

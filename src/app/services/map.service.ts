@@ -1,5 +1,4 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
 

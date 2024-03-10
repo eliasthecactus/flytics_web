@@ -321,7 +321,7 @@
           </div>
           <br>
 
-          <table class="table table-xs">
+          <!-- <table class="table table-xs">
             <thead>
               <tr>
                 <th class="w-4/12">Height Profile</th>
@@ -334,10 +334,19 @@
             </tr>
             <tbody class="w-full">
               <div class="flex h-52 w-full justify-center my-2 items-center flex-col">
-                <ngx-charts-line-chart [tooltipDisabled]="true" [showGridLines]="true" [xAxis]="false" [wrapTicks]="true" [yAxis]="true" [results]="detailFlightHeightProfile" [scheme]="'air'" [animations]="false" style="fill: rgb(127, 127, 127);" [legend]="false" [legendPosition]="legendBelow" [autoScale]="true"></ngx-charts-line-chart>
+                <ngx-charts-line-chart (activate)="onSelect($event)" [tooltipDisabled]="false" [showGridLines]="true" [xAxis]="false" [wrapTicks]="true" [yAxis]="true" [results]="detailFlightHeightProfile" [scheme]="'air'" [animations]="true" style="fill: rgb(127, 127, 127);" [legend]="false" [legendPosition]="legendBelow" [autoScale]="true">
+                  <ng-template #tooltipTemplate let-model="model">
+                    This is vertical line tooltip template
+                    <pre class="z-50">{{model|json}}%</pre>        
+                  </ng-template>
+                  <ng-template #seriesTooltipTemplate let-model="model">
+                    This is vertical line tooltip template
+                    <pre class="z-50">{{model|json}}%</pre>        
+                  </ng-template>
+                </ngx-charts-line-chart>
               </div>
             </tbody>
-          </table>
+          </table> -->
 
 
         </div>
