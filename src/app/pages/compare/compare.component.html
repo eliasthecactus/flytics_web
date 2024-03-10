@@ -8,12 +8,38 @@
         </div>
     </div>
 
-    <div class="flex h-full flex-col justify-center py-10 space-y-4 flex-grow">
+    <div class="flex w-full h-full flex-col justify-center space-y-4 flex-grow">
+
+
+
 
     </div>
 
 
 </div>
+
+<div class="fixed bottom-4 right-4">
+    <div class="tooltip tooltip-left" data-tip="Choose flights">
+        <button onclick="my_modal_1.showModal()" class="btn btn-primary rounded-full"><i class="fa-solid fa-bars"></i></button>
+    </div>
+</div>
+
+<dialog id="my_modal_1" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <div class="flex w-full flex-col space-y-2">
+        <h3 class="font-bold text-lg">Flights to compare</h3>
+        <div class="flex bg-base-300 rounded-xl justify-between p-2">
+            <p>#1234</p>
+            <button (click)="removeFlight(0)" class="btn btn-xs btn-primary">Remove</button>
+        </div>
+      </div>
+
+    </div>
+  </dialog>
+
 <div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
     <div role="alert"
         [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}" class="alert">

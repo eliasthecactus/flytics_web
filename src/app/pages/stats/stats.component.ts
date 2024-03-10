@@ -68,11 +68,7 @@ export class StatsComponent {
   detailFlightTab: boolean = true
 
 
-  statsData = [
-    [{"name": "Flight Count", "value": 0}],
-    [{"name": "Distance (km)", "value": 0}],
-    [{"name": "⌀ takeoff level", "value": 0}]
-  ];
+  statsData: ({ name: string; value: number }[])[] = [];
 
   legendBelow: LegendPosition = LegendPosition.Below
 
@@ -347,7 +343,7 @@ export class StatsComponent {
           this.myFlights = response.flights;
           // console.log(this.myFlights)
           this.sortTable(this.sortColumn);
-          this.statsData[0] = [{"name": "Flight Count", "value": this.myFlights.length}]
+          this.statsData.push([{"name": "Flight Count", "value": this.myFlights.length}])
         } else {
           this.alertService.show("error", response.message);
         }

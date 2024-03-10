@@ -18,7 +18,7 @@ import { Flight } from '../../modules/flight/flight.module';
 })
 export class CompareComponent {
 
-  isReady = false;
+  isReady = true;
 
   flights: Flight[] = []
   flightNumbers: number[] = []
@@ -38,11 +38,17 @@ export class CompareComponent {
         }
         if (cleanNumber.length > 0) {
           console.log(this.flightNumbers);
+        } else {
+          this.isReady = true;
         }
       } else {
         // console.log("failure")
       }
     });
+  }
+
+  removeFlight(flightid: number) {
+    console.log("Remove "+flightid)
   }
 
 
