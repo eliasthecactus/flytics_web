@@ -18,7 +18,7 @@ interface uploadState {
 @Component({
   selector: 'app-add-flight',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
   templateUrl: './add-flight.component.html',
   providers: [TokenCheckerService, ApiService],
   styleUrl: './add-flight.component.css'

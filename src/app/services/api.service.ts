@@ -40,9 +40,15 @@ export class ApiService {
     const options = { headers };
     return this.http.get(`${this.apiUrl}/api/user`, options);  }
 
-  availabilityCheck(username: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/api/user/availability?username=`+username);
-  }
+    availabilityCheck(username: string): Observable<any> {
+      return this.http.get(`${this.apiUrl}/api/user/availability?username=`+username);
+    }
+
+    searchUser(name: string): Observable<any> {
+      const headers = this.getHeaders();
+      const options = { headers };
+      return this.http.get(`${this.apiUrl}/api/user/search?name=`+name, options);
+    }
 
   deleteAccount(): Observable<any> {
     const headers = this.getHeaders();

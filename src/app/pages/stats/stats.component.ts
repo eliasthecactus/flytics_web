@@ -14,7 +14,6 @@ import { Flight } from '../../modules/flight/flight.module';
 
 
 
-
 @Component({
   selector: 'app-stats',
   standalone: true,
@@ -74,6 +73,7 @@ export class StatsComponent {
   detailFlightCoordinates = [];
   detailFlightHeightProfile: any[] = [];
   detailFlightHeightProfileLoaded: boolean = false;
+
   
 
 

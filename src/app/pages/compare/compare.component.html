@@ -8,8 +8,22 @@
         </div>
     </div>
 
-    <div class="flex w-full h-full flex-col justify-center space-y-4 flex-grow">
+    <div class="flex w-full min-h-full flex-col justify-start space-y-4 flex-grow">
 
+        <p *ngIf="flights.length == 0" class="w-full text-center py-4">There are no selected flights to analyse or compare. Please <span class="cursor-pointer underline" onclick="my_modal_1.showModal()">add</span> at least one</p>
+
+        <div class="w-full h-96">
+            <ngx-charts-line-chart (activate)="onSelect($event)" [tooltipDisabled]="false" [showGridLines]="true" [xAxis]="false" [wrapTicks]="true" [yAxis]="true" [results]="" [scheme]="'air'" [animations]="true" style="fill: rgb(127, 127, 127);" [legend]="false" [legendPosition]="legendBelow" [autoScale]="true">
+                <!-- <ng-template #tooltipTemplate let-model="model">
+                  This is vertical line tooltip template
+                  <pre class="z-50">{{model|json}}%</pre>        
+                </ng-template>
+                <ng-template #seriesTooltipTemplate let-model="model">
+                  This is vertical line tooltip template
+                  <pre class="z-50">{{model|json}}%</pre>        
+                </ng-template> -->
+              </ngx-charts-line-chart>
+        </div>
 
 
 
@@ -31,9 +45,147 @@
       </form>
       <div class="flex w-full flex-col space-y-2">
         <h3 class="font-bold text-lg">Flights to compare</h3>
-        <div class="flex bg-base-300 rounded-xl justify-between p-2">
-            <p>#1234</p>
-            <button (click)="removeFlight(0)" class="btn btn-xs btn-primary">Remove</button>
+        <div class="flex bg-base-300 rounded-xl justify-between p-2" *ngFor="let flight of flights; let i = index">
+            <p>#{{flight.id}}</p>
+            <button (click)="removeFlight(flight.id)" class="btn btn-xs btn-primary">Remove</button>
+        </div>
+        <button onclick="my_modal_2.showModal();" class="btn btn-outline btn-primary">Add</button>
+      </div>
+
+    </div>
+  </dialog>
+
+  <dialog id="my_modal_2" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <div class="flex w-full flex-col space-y-2">
+        <h3 class="font-bold text-lg">Add a flight</h3>
+        <div class="flex flex-col w-full py-2">
+            <div class="flex flex-col w-full border-opacity-50">
+                <label class="label">
+                    <span class="text-base label-text">Flight ID</span>
+                </label>
+                <input [(ngModel)]="addFlightId" name="id" type="number" placeholder="1534632..." class="w-full input input-bordered"/>
+                <p *ngIf="noFlightFound" class="text-red-400 text-xs">No flight found</p>
+                <button (click)="addFlight(+addFlightId)" [ngClass]="{'btn-disabled': flightSelected == null && (!addFlightId || addFlightId.length == 0) }" class="btn btn-primary btn-outline my-2">Add #{{addFlightId}}</button>
+
+                <div class="divider">OR</div>
+                <div class="flex flex-col w-full">
+
+                    <div *ngIf="userSelected == null" class="flex flex-col w-full space-y-2">
+                        <label class="input input-bordered flex items-center gap-2">
+                            <div class="flex justify-center items-center h-10 w-10">
+                                <i class="fa-solid fa-signature"></i>
+                            </div>
+                            <input [(ngModel)]="addFlightName" (ngModelChange)="addFlightNameChange($event)" type="text" class="grow bg-transparent" placeholder="Pilot Name" />
+                            <i *ngIf="addFlightName.length > 0" (click)="addFlightName = ''; availableUsers = []" class="fa-solid fa-circle-xmark"></i>
+                        </label>
+    
+                        <div ngClass="gettingUsers ? 'overflow-hidden' : 'overflow-scroll'" class="flex flex-col w-full overflow-scroll max-h-52 relative">
+                            <div *ngIf="gettingUsers" class="absolute bg-base-300 opacity-50 w-full h-full flex justify-center">
+                                <span class="top-12 loading loading-spinner"></span>
+                            </div>
+                            <div (click)="selectUser(user)" class="flex items-center gap-2 hover:bg-base-300 p-2 rounded-xl cursor-pointer" *ngFor="let user of availableUsers; let i = index">
+                                <!-- <img class="rounded-full w-10 h-10" src="{{apiService.apiUrl}}/api/user/image?filename={{user.picture}}" alt=""> -->
+                                <div class="avatar placeholder">
+                                    <div *ngIf="user.picture" class="w-8 rounded-full">
+                                        <img src="{{apiService.apiUrl}}/api/user/image?filename={{user.picture}}" />
+                                    </div>
+                                    <div *ngIf="!user.picture" class="bg-neutral text-neutral-content rounded-full w-8">
+                                        <span class="text-xs">{{ user.first_name[0] }}</span>
+                                    </div>
+                                </div>
+                                <p class="">{{user.first_name}} {{user.last_name}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="userSelected != null" class="flex flex-col w-full space-y-2">
+                        <div class="flex items-center p-2 justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="avatar placeholder">
+                                    <div *ngIf="userSelected.picture" class="w-8 rounded-full">
+                                        <img src="{{apiService.apiUrl}}/api/user/image?filename={{userSelected.picture}}" />
+                                    </div>
+                                    <div *ngIf="!userSelected.picture" class="bg-neutral text-neutral-content rounded-full w-8">
+                                        <span class="text-xs">{{ userSelected.first_name[0] }}</span>
+                                    </div>
+                                </div>
+                                <p class="">{{userSelected.first_name}} {{userSelected.last_name}}</p>
+                            </div>
+
+                            <button (click)="userSelected = null" class="btn btn-xs btn-primary">Change</button>
+                        </div>
+                        <div *ngIf="availableFlights.length > 0" class="h-52 overflow-y-auto">
+                            <table class="table table-zebra table-pin-rows table-pin-cols">
+                                <thead>
+                                  <tr>
+                                    <th></th>
+                                    <td (click)="sortTable('start_time')" class="cursor-pointer" [class.sorted]="sortColumn === 'start_time'">
+                                      Date <i class="fa-solid fa-chevron-down"
+                                        *ngIf="sortColumn === 'start_time' && sortDirection === 'desc'"></i>
+                                      <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'start_time' && sortDirection === 'asc'"></i>
+                                    </td>
+                                    <td (click)="sortTable('location')" class="cursor-pointer" [class.sorted]="sortColumn === 'location'">
+                                      Location <i class="fa-solid fa-chevron-down"
+                                        *ngIf="sortColumn === 'location' && sortDirection === 'asc'"></i>
+                                      <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'location' && sortDirection === 'desc'"></i>
+                                    </td>
+                                    <td (click)="sortTable('distance')" class="cursor-pointer" [class.sorted]="sortColumn === 'distance'">
+                                      Distance <i class="fa-solid fa-chevron-down"
+                                        *ngIf="sortColumn === 'distance' && sortDirection === 'desc'"></i>
+                                      <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'distance' && sortDirection === 'asc'"></i>
+                                    </td>
+                                    <td (click)="sortTable('duration')" class="cursor-pointer" [class.sorted]="sortColumn === 'duration'">
+                                      Duration <i class="fa-solid fa-chevron-down"
+                                        *ngIf="sortColumn === 'duration' && sortDirection === 'desc'"></i>
+                                      <i class="fa-solid fa-chevron-up" *ngIf="sortColumn === 'duration' && sortDirection === 'asc'"></i>
+                                    </td>
+                                  </tr>
+                                </thead>
+                                <tbody class="">
+                                  <tr class="hover cursor-pointer" *ngFor="let flight of availableFlights; let i = index"
+                                    (click)="addFlight(flight.id)">
+                                    <th class="text-xs">#{{flight.id}}</th>
+                                    <td class="">
+                                      <p class="whitespace-nowrap">{{flight.start_time | date: 'MMM d, yyyy'}}</p>
+                                      <!-- <p>{{flight.start_time | date: 'H:mm'}}</p> -->
+                      
+                                      <p>{{realDateTime(flight.start_time, flight.timezone_raw_offset, flight.timezone_dst_offset) | date:
+                                        'H:mm':'GMT'}}</p>
+                                    </td>
+                                    <td>
+                                      <div class="flex space-x-1">
+                                        <img src="https://flagcdn.com/{{flight.country_code.toLowerCase()}}.svg" class="w-3 object-contain"
+                                          alt="{{flight.country}}" title="{{flight.country}}">
+                                        <a class="whitespace-normal" target="_blank">{{flight.location}}</a>
+                                        <!-- <a href="http://maps.google.com/maps?q={{flight.start_lat}},{{flight.start_long}}" class="whitespace-normal" target="_blank">{{flight.location}}</a> -->
+                                      </div>
+                                    </td>
+                                    <td>{{(flight.distance/1000).toFixed(1)}}km</td>
+                                    <td>
+                                      <div class="flex space-x-1">
+                                        <p *ngIf="(flight.duration / 3600) >= 1">{{ floorNumber(flight.duration/3600) }}h</p>
+                                        <p>{{((flight.duration % 3600) / 60).toFixed(0)}}min</p>
+                      
+                                      </div>
+                                      <!-- {{ Math.floor(flight.duration / 3600) }}h {{ Math.round((flight.duration % 3600) / 60) }}m -->
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                        <div *ngIf="availableFlights.length == 0" class="flex">
+                            <p class="text-red-400 text-xs">This user does not have any flights</p>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
         </div>
       </div>
 

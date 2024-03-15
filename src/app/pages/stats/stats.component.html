@@ -14,10 +14,25 @@
       <div class="indicator">
         <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
         <div class="grid place-items-center">
-          <label for="filter-drawer" class="btn btn-neutral drawer-button">Filter</label>
+          <label for="filter-drawer" class="btn drawer-button">Filter</label>
         </div>
       </div>
     </div>
+
+
+    <div class="dropdown z-50">
+      <div tabindex="0" role="button" class="btn m-1">
+        Theme
+        <svg width="12px" height="12px" class="h-2 w-2 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
+      </div>
+      <ul tabindex="0" class="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52">
+        <li><input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Default" value="default"/></li>
+        <li><input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Light" value="light"/></li>
+        <li><input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Synthwave" value="synthwave"/></li>
+        <li><input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Forest" value="forest"/></li>
+      </ul>
+    </div>
+
 
   </div>
 
@@ -367,13 +382,13 @@
             <div class="flex justify-between items-center">
               <p>Download flight</p>
               <div class="join">
-                <span (click)="downloadFlight(currentSelectedFlight.id!,'kml')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">KML</span>
-                <span (click)="downloadFlight(currentSelectedFlight.id!, 'geojson')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">GeoJSON</span>
-                <span (click)="downloadFlight(currentSelectedFlight.id!, 'igc')" class="join-item badge badge-neutral cursor-pointer hover:badge-primary">IGC</span>
+                <span (click)="downloadFlight(currentSelectedFlight.id!,'kml')" class="join-item badge cursor-pointer hover:badge-primary">KML</span>
+                <span (click)="downloadFlight(currentSelectedFlight.id!, 'geojson')" class="join-item badge cursor-pointer hover:badge-primary">GeoJSON</span>
+                <span (click)="downloadFlight(currentSelectedFlight.id!, 'igc')" class="join-item badge cursor-pointer hover:badge-primary">IGC</span>
               </div>
             </div>
   
-            <button (click)="compareFlight(currentSelectedFlight.id!)" class="btn"><i class="fa-solid fa-code-compare"></i> Compare to another flight</button>
+            <button routerLink="/compare" [queryParams]="{flightnumbers: currentSelectedFlight.id}" class="btn"><i class="fa-solid fa-code-compare"></i> Compare to another flight</button>
             <button (click)="deleteFlight(currentSelectedFlight!.id ?? 0)" class="btn btn-error"><i class="fa-solid fa-trash"></i> Delete Flight</button>
 
 

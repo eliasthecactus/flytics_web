@@ -38,6 +38,5 @@ export const routes: Routes = [
     { path: 'privacypolicy', component: PrivacyPolicyComponent },
     { path: 'cookiepolicy', component: CookiePolicyComponent },
     { path: 'passwordreset', component: PasswordResetComponent },
-    { path: 'test', component: MapComponent },
     { path: "**", redirectTo: "home" },
 ];
