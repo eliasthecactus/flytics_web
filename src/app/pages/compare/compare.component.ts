@@ -8,6 +8,9 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Flight } from '../../modules/flight/flight.module';
 import { NgxChartsModule, LegendPosition, id } from '@swimlane/ngx-charts';
 import { FormsModule } from '@angular/forms';
+import { MapService } from '../../services/map.service';
+import { MapComponent } from '../../components/map/map.component';
+
 
 interface User {
   first_name: string;
@@ -19,10 +22,10 @@ interface User {
 @Component({
   selector: 'app-compare',
   standalone: true,
-  imports: [HttpClientModule, CommonModule, NgxChartsModule, FormsModule],
+  imports: [HttpClientModule, CommonModule, NgxChartsModule, FormsModule, MapComponent],
   templateUrl: './compare.component.html',
   styleUrl: './compare.component.css',
-  providers: [TokenCheckerService, ApiService],
+  providers: [TokenCheckerService, ApiService, MapService],
 })
 export class CompareComponent {
   isReady = false;
@@ -52,9 +55,14 @@ export class CompareComponent {
     public alertService: AlertService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    public apiService: ApiService
+    public apiService: ApiService,
+    private mapService: MapService
   ) {
     this.tokenChecker.redirectToLoginIfExpired();
+  }
+
+  ngAfterViewInit() {
+    this.mapService.resizeMap('map')
   }
 
   ngOnInit() {

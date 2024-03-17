@@ -8,9 +8,13 @@
         </div>
     </div>
 
-    <div class="flex w-full min-h-full flex-col justify-start space-y-4 flex-grow">
+    <div class="flex w-full min-h-full flex-col justify-start space-y-4 flex-grow p-4">
 
         <p *ngIf="flights.length == 0" class="w-full text-center py-4">There are no selected flights to analyse or compare. Please <span class="cursor-pointer underline" onclick="my_modal_1.showModal()">add</span> at least one</p>
+
+        <div class="w-full h-96">
+            <app-map mapId="map" [location]="{lat: 0, lng: 0}" [zoom]="2"></app-map>
+        </div>
 
         <div class="w-full h-96">
             <ngx-charts-line-chart (activate)="onSelect($event)" [tooltipDisabled]="false" [showGridLines]="true" [xAxis]="false" [wrapTicks]="true" [yAxis]="true" [results]="" [scheme]="'air'" [animations]="true" style="fill: rgb(127, 127, 127);" [legend]="false" [legendPosition]="legendBelow" [autoScale]="true">
@@ -27,6 +31,7 @@
 
 
 
+
     </div>
 
 
@@ -38,7 +43,7 @@
     </div>
 </div>
 
-<dialog id="my_modal_1" class="modal">
+<dialog id="my_modal_1" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -46,7 +51,10 @@
       <div class="flex w-full flex-col space-y-2">
         <h3 class="font-bold text-lg">Flights to compare</h3>
         <div class="flex bg-base-300 rounded-xl justify-between p-2" *ngFor="let flight of flights; let i = index">
-            <p>#{{flight.id}}</p>
+            <div class="flex items-center space-x-2">
+                <p class="font-semibold">#{{flight.id}}</p>
+                <p>{{flight.user_first_name}} {{flight.user_last_name}}</p>
+            </div>
             <button (click)="removeFlight(flight.id)" class="btn btn-xs btn-primary">Remove</button>
         </div>
         <button onclick="my_modal_2.showModal();" class="btn btn-outline btn-primary">Add</button>
@@ -55,7 +63,7 @@
     </div>
   </dialog>
 
-  <dialog id="my_modal_2" class="modal">
+  <dialog id="my_modal_2" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -64,11 +72,8 @@
         <h3 class="font-bold text-lg">Add a flight</h3>
         <div class="flex flex-col w-full py-2">
             <div class="flex flex-col w-full border-opacity-50">
-                <label class="label">
-                    <span class="text-base label-text">Flight ID</span>
-                </label>
-                <input [(ngModel)]="addFlightId" name="id" type="number" placeholder="1534632..." class="w-full input input-bordered"/>
-                <p *ngIf="noFlightFound" class="text-red-400 text-xs">No flight found</p>
+                <input [(ngModel)]="addFlightId" name="id" type="number" placeholder="Flight ID" class="w-full input input-bordered"/>
+                <p *ngIf="noFlightFound" class="text-red-400 text-xs">Flight does not exist or is private</p>
                 <button (click)="addFlight(+addFlightId)" [ngClass]="{'btn-disabled': flightSelected == null && (!addFlightId || addFlightId.length == 0) }" class="btn btn-primary btn-outline my-2">Add #{{addFlightId}}</button>
 
                 <div class="divider">OR</div>

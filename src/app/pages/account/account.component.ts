@@ -7,13 +7,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TokenCheckerService } from '../../services/token-checker.service';
 import { LogoutService } from '../../services/logout.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-account',
   standalone: true,
   imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './account.component.html',
-  providers: [ApiService, TokenCheckerService],
+  providers: [ApiService, TokenCheckerService, ThemeService],
   styleUrl: './account.component.css'
 })
 export class AccountComponent {
@@ -43,7 +44,7 @@ export class AccountComponent {
 
   loadingSpinner: boolean = false;
 
-  constructor(public apiService: ApiService, private router: Router, public alertService: AlertService, private tokenCheckerService: TokenCheckerService, private logoutService: LogoutService) {}
+  constructor(public apiService: ApiService, private router: Router, public alertService: AlertService, private tokenCheckerService: TokenCheckerService, private logoutService: LogoutService, public themeService: ThemeService) {}
 
   ngOnInit() {
     this.tokenCheckerService.redirectToLoginIfExpired();
@@ -281,6 +282,5 @@ export class AccountComponent {
       }
     );
   }
-
 
 }

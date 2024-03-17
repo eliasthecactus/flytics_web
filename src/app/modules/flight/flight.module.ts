@@ -25,6 +25,8 @@ export interface Flight {
   timezone_raw_offset: number;
   uploaded: string;
   user: number;
+  user_first_name: string;
+  user_last_name: string;
 }
 
 @NgModule({

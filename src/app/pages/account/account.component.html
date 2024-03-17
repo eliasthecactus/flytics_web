@@ -3,7 +3,8 @@
 
         <h1 class="text-2xl font-semibold">Account</h1>
         <div class="flex space-x-2">
-            <a (click)="saveInformation()" [ngClass]="{'btn-disabled' : !somethingChanged()}" class="btn btn-primary btn-disabled"><i class="fa-regular fa-floppy-disk"></i> Save</a>
+            <a (click)="saveInformation()" [ngClass]="{'btn-disabled' : !somethingChanged()}"
+                class="btn btn-primary btn-disabled"><i class="fa-regular fa-floppy-disk"></i> Save</a>
             <a (click)="cancelInformation()" class="btn">Cancel</a>
         </div>
     </div>
@@ -17,104 +18,146 @@
                 </div>
                 <div *ngIf="!hasProfilePicture" class="bg-neutral text-neutral-content rounded-full w-24">
                     <span class="text-3xl">{{ userData.first_name[0] }}</span>
-                  </div>
+                </div>
             </div>
         </label>
         <input type="file" id="profilePicture" style="display:none" accept="image/*"
             (change)="changeProfilePicture($event)" />
-            <a (click)="removeProfilePicture()" class="link link-primary">Remove picture</a>
+        <a (click)="removeProfilePicture()" class="link link-primary">Remove picture</a>
 
 
         <div class="w-full">
             <label class="label">
                 <span class="text-base label-text">First Name</span>
             </label>
-            <input [(ngModel)]="userData.first_name" name="first_name" type="text" placeholder="John" class="w-full input input-bordered input-primary" />
+            <input [(ngModel)]="userData.first_name" name="first_name" type="text" placeholder="John"
+                class="w-full input input-bordered input-primary" />
         </div>
         <div class="w-full">
             <label class="label">
                 <span class="text-base label-text">Last Name</span>
             </label>
-            <input [(ngModel)]="userData.last_name" name="last_name" type="text" placeholder="Doe" class="w-full input input-bordered input-primary" />
+            <input [(ngModel)]="userData.last_name" name="last_name" type="text" placeholder="Doe"
+                class="w-full input input-bordered input-primary" />
         </div>
         <div class="w-full">
             <label class="label">
                 <span class="text-base label-text">Username</span>
             </label>
-            <input (ngModelChange)="checkAvailability($event)" [(ngModel)]="userData.username" name="username" type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
+            <input (ngModelChange)="checkAvailability($event)" [(ngModel)]="userData.username" name="username"
+                type="text" placeholder="johndoe97" class="w-full input input-bordered input-primary" />
             <p id="usernameAvailable" class="hidden text-xs mt-2 text-green-500">{{userData.username}} is available</p>
-            <p id="usernameNotAvailable" class="hidden text-xs mt-2 text-red-500">{{userData.username}} is not available</p>
+            <p id="usernameNotAvailable" class="hidden text-xs mt-2 text-red-500">{{userData.username}} is not available
+            </p>
         </div>
         <div class="w-full">
             <label class="label">
                 <span class="text-base label-text">Email</span>
             </label>
-            <input [(ngModel)]="userData.email" name="email" type="text" placeholder="johndoe@mail.exp" class="w-full input input-bordered input-primary" />
+            <input [(ngModel)]="userData.email" name="email" type="text" placeholder="johndoe@mail.exp"
+                class="w-full input input-bordered input-primary" />
         </div>
         <br>
         <button class="btn btn-outline m-5 w-full" onclick="changePasswordModal.showModal()">Change password</button>
-        <dialog id="changePasswordModal" class="modal modal-bottom sm:modal-middle">
-            <div class="modal-box">
-                <h3 class="font-bold text-lg">Change Password</h3>
-                <form (ngSubmit)="changePassword()">
-                    <div>
-                        <label class="label">
-                            <span class="text-base label-text">Current Password</span>
-    
-                        </label>
-                        <input [(ngModel)]="passwordChangeData.currentPassword" name="currentPassword" id="currentPassword" type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary" autocomplete="new-password"/>
-                    </div>
-                    <div>
-                        <label class="label">
-                            <span class="text-base label-text">New Password</span>
-                            <div class="tooltip tooltip-left" data-tip="The password should be 8 characters long, at least contain one capital letter, one lowercase letter, and one special character">
-                                <i class="fa-solid fa-circle-info text-sm text-gray-600"></i>
-                              </div>
-                        </label>
-                        <input [(ngModel)]="passwordChangeData.newPassword" name="newPassword" id="newPassword" type="password" placeholder="Confirm Password" class="w-full input input-bordered input-primary" autocomplete="new-password" />
-                    </div>
-                    <div>
-                        <label class="label">
-                            <span class="text-base label-text">Confirm New Password</span>
-                        </label>
-                        <input [(ngModel)]="passwordChangeData.confirmNewPassword" name="confirmNewPassword" id="confirmNewPassword" type="password" placeholder="Confirm Password" class="w-full input input-bordered input-primary" autocomplete="new-password" />
-                    </div>
-
-                    <div class="modal-action">
-                        <div class="flex items-center space-x-3">
-                            <button type="submit" id="changePasswordButton" [ngClass]="{'btn-disabled' : loadingSpinner}" class="btn btn-outline"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>Change</button>
-                            <form method="dialog">
-                                <button id="passwordCloseButton" class="btn">Close</button>
-                            </form>
-                        </div>
-    
-                    </div>
-                </form>
-                
-
-            </div>
-        </dialog>
         <button class="btn btn-error m-5 w-full btn-outline" onclick="deleteModal.showModal()">Delete Account</button>
-        <dialog id="deleteModal" class="modal modal-bottom sm:modal-middle">
-            <div class="modal-box">
-                <h3 id="modalTitle" class="font-bold text-lg">Delete Account!</h3>
-                <p id="modalText" class="py-4">Are you sure. You won't be able to login after the account has been deleted!</p>
-                <div class="modal-action">
-                    <div class="flex items-center space-x-3">
-                        <button id="deleteButton" (click)="doDeleteAccount()" [ngClass]="{'btn-disabled' : loadingSpinner}" class="btn btn-error"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>YES, DELETE!</button>
-                        <form method="dialog">
-                            <button id="deleteCloseButton" class="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </dialog>
 
+        <div class="dropdown">
+            <div tabindex="0" role="button" class="btn m-1">
+                Theme
+                <svg width="12px" height="12px" class="h-2 w-2 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"> <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52">
+                <li>
+                    <input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Default" value="default" (click)="themeService.changeTheme('default')" />
+                </li>
+                <li>
+                    <input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Light" value="light" (click)="themeService.changeTheme('light')" />
+                </li>
+                <li>
+                    <input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Synthwave" value="synthwave" (click)="themeService.changeTheme('synthwave')" />
+                </li>
+                <li>
+                    <input type="radio" name="theme-dropdown" class="theme-controller btn btn-sm btn-block btn-ghost justify-start" aria-label="Forest" value="forest" (click)="themeService.changeTheme('forest')" />
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+<dialog id="changePasswordModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Change Password</h3>
+        <form (ngSubmit)="changePassword()">
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Current Password</span>
+
+                </label>
+                <input [(ngModel)]="passwordChangeData.currentPassword" name="currentPassword" id="currentPassword"
+                    type="password" placeholder="Enter Password" class="w-full input input-bordered input-primary"
+                    autocomplete="new-password" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">New Password</span>
+                    <div class="tooltip tooltip-left"
+                        data-tip="The password should be 8 characters long, at least contain one capital letter, one lowercase letter, and one special character">
+                        <i class="fa-solid fa-circle-info text-sm text-gray-600"></i>
+                    </div>
+                </label>
+                <input [(ngModel)]="passwordChangeData.newPassword" name="newPassword" id="newPassword" type="password"
+                    placeholder="Confirm Password" class="w-full input input-bordered input-primary"
+                    autocomplete="new-password" />
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text">Confirm New Password</span>
+                </label>
+                <input [(ngModel)]="passwordChangeData.confirmNewPassword" name="confirmNewPassword"
+                    id="confirmNewPassword" type="password" placeholder="Confirm Password"
+                    class="w-full input input-bordered input-primary" autocomplete="new-password" />
+            </div>
+
+            <div class="modal-action">
+                <div class="flex items-center space-x-3">
+                    <button type="submit" id="changePasswordButton" [ngClass]="{'btn-disabled' : loadingSpinner}"
+                        class="btn btn-outline"><span *ngIf="loadingSpinner"
+                            class="loading loading-spinner"></span>Change</button>
+                    <form method="dialog">
+                        <button id="passwordCloseButton" class="btn">Close</button>
+                    </form>
+                </div>
+
+            </div>
+        </form>
+
+
+    </div>
+</dialog>
+<dialog id="deleteModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 id="modalTitle" class="font-bold text-lg">Delete Account!</h3>
+        <p id="modalText" class="py-4">Are you sure. You won't be able to login after the account has been
+            deleted!</p>
+        <div class="modal-action">
+            <div class="flex items-center space-x-3">
+                <button id="deleteButton" (click)="doDeleteAccount()" [ngClass]="{'btn-disabled' : loadingSpinner}"
+                    class="btn btn-error"><span *ngIf="loadingSpinner" class="loading loading-spinner"></span>YES,
+                    DELETE!</button>
+                <form method="dialog">
+                    <button id="deleteCloseButton" class="btn">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</dialog>
 <div *ngIf="alertService.showAlert" class="fixed top-4 right-4">
-    <div role="alert" [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}" class="alert">
-        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <div role="alert"
+        [ngClass]="{'alert-error': alertService.alertLevel == 'error', 'alert-success': alertService.alertLevel == 'success', 'alert-warning': alertService.alertLevel == 'warning', 'alert-info': alertService.alertLevel == 'info'}"
+        class="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
         <span>{{ alertService.alertMessage}}</span>
-      </div>
+    </div>
 </div>
