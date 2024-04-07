@@ -9,7 +9,7 @@
       <p class="text-xl font-bold">List</p>
     </div> -->
 
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-2 overflow-hidden">
       <span *ngIf="flightsLoading" class="loading loading-spinner loading-sm"></span>
       <div class="indicator">
         <span *ngIf="!filterOpen && filterSet()" class="indicator-item badge badge-primary"></span>
@@ -114,8 +114,8 @@
 
                 <div class="flex flex-col space-y-1">
                   <p class="text-xs">Location</p>
-                  <div class="h-32 w-full">
-                    <app-map mapId="locationMap" (mapClick)="handleMapClick($event)"></app-map>
+                  <div class="h-32 w-full rounded-md overflow-hidden shadow-lg">
+                    <app-map mapId="locationMap" (mapClick)="handleMapClick($event)" class="shadow-xl"></app-map>
                   </div>
                 </div>
 
@@ -192,7 +192,7 @@
         <h3 class="font-bold text-lg pb-4">Flight #{{currentSelectedFlight.id}}</h3>
 
 
-        <div class="h-52 w-full">
+        <div class="h-52 w-full rounded-md overflow-hidden shadow-lg">
           <app-map mapId="detailMap"></app-map>
         </div>
 
@@ -503,7 +503,7 @@
 
     <input type="radio" (click)="openFlightMap()" name="my_tabs_2" role="tab" class="tab" aria-label="Map" />
     <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2 z-20">
-      <div class="h-96">
+      <div class="h-96 rounded-md overflow-hidden shadow-md">
         <app-map mapId="flightsMap" [location]="{lat: 0, lng: 0}" [zoom]="2"></app-map>
       </div>
     </div>

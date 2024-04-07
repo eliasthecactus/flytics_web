@@ -207,7 +207,7 @@ export class CompareComponent {
 
   closeCompare() {
     // window.history.back();
-    this.router.navigate(['/dashboard/stats']);
+    this.router.navigate(['/dashboard/flightbook']);
   }
 
   sortTable(column: string) {

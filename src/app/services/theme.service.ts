@@ -10,8 +10,8 @@ export class ThemeService {
   constructor(private cookieService: CookieService) { }
 
   changeTheme(theme: string) {
-    this.cookieService.set('theme', theme)
-    document.documentElement.setAttribute("data-theme",theme)
+    this.cookieService.set('theme', theme, undefined, "/")
+    document.documentElement.setAttribute("data-theme", theme)
   }
 
   setSavedTheme() {

@@ -21,6 +21,7 @@
     "@asymmetrik/ngx-leaflet": "^17.0.0",
     "@canvasjs/angular-charts": "^1.1.1",
     "@swimlane/ngx-charts": "^20.5.0",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet-omnivore": "^0.3.4",
     "ngx-cookie-service": "^17.0.1",

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
+import {HttpClientModule} from '@angular/common/http' 
 
 @Injectable({
   providedIn: 'root'
@@ -50,11 +51,17 @@ export class ApiService {
       return this.http.get(`${this.apiUrl}/api/user/search?name=`+name, options);
     }
 
-  deleteAccount(): Observable<any> {
-    const headers = this.getHeaders();
-    const options = { headers };
-    return this.http.delete(`${this.apiUrl}/api/user`, options);
-  }
+    deleteAccount(): Observable<any> {
+      const headers = this.getHeaders();
+      const options = { headers };
+      return this.http.delete(`${this.apiUrl}/api/user`, options);
+    }
+    logout(): Observable<any> {
+      var token = this.cookieService.get('refresh_token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      const options = { headers };
+      return this.http.delete(`${this.apiUrl}/api/user/logout`, options);
+    }
 
   changeProfilePicture(file: File): Observable<any> {
     const headers = this.getHeaders();

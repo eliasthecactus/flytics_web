@@ -15,21 +15,15 @@ import { Flight } from '../../modules/flight/flight.module';
 
 
 @Component({
-  selector: 'app-stats',
+  selector: 'app-flightbook',
   standalone: true,
   imports: [CommonModule, FormsModule, DatePipe, MapComponent, RouterLink, NgxChartsModule],
   providers: [DatePipe, ApiService, MapService],
-  templateUrl: './stats.component.html',
-  styleUrl: './stats.component.css',
+  templateUrl: './flightbook.component.html',
+  styleUrl: './flightbook.component.css',
 })
 
-export class StatsComponent {
-
-
-
-  
-  
-
+export class FlightbookComponent {
   filterParameter = {
     fromDateBool: false,
     formatedFromDate: "",

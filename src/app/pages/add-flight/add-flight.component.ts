@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
 import { AlertService } from '../../services/alert.service';
 import { forkJoin, tap } from 'rxjs';
-import { Route, RouterLink, Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 
 interface uploadState {

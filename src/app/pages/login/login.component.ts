@@ -7,7 +7,7 @@ import { AlertService } from '../../services/alert.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { TokenCheckerService } from '../../services/token-checker.service';
-
+import { jwtDecode } from "jwt-decode";
 
 @Component({
   selector: 'app-login',
@@ -51,6 +51,11 @@ export class LoginComponent {
         if (response.code == 0) {
           // this.cookieService.set('token', response.access_token);
           this.cookieService.set('token', response.access_token, undefined, '/', undefined, true, 'Lax');
+          this.cookieService.set('refresh_token', response.refresh_token, undefined, '/', undefined, true, 'Lax');
+          const accessTokenDecoded = jwtDecode(response.access_token)
+          const refreshTokenDecoded = jwtDecode(response.refresh_token)
+          localStorage.setItem('accesshTokenExpire', accessTokenDecoded['exp']!.toString())
+          localStorage.setItem('refreshTokenExpire', refreshTokenDecoded['exp']!.toString())
           localStorage.setItem('user_id',response.user)
           this.router.navigate(['/dashboard']);
         } else {

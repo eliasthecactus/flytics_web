@@ -5,6 +5,7 @@ import { LogoutService } from '../../services/logout.service';
 import { TokenCheckerService } from '../../services/token-checker.service';
 import { ApiService } from '../../services/api.service';
 import { HttpClientModule } from '@angular/common/http';
+import { AlertService } from '../../services/alert.service';
 
 
 
@@ -13,19 +14,31 @@ import { HttpClientModule } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterOutlet, RouterLinkActive, HttpClientModule],
   templateUrl: './dashboard.component.html',
-  providers: [ApiService, TokenCheckerService],
+  providers: [ApiService, TokenCheckerService, LogoutService],
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   hasProfilePicture: boolean = false;
   avaterInformation: string = "";
 
-  constructor(private router: Router, private logoutService: LogoutService, private tokenChecker: TokenCheckerService, public apiService: ApiService) {
+  constructor(private router: Router, private logoutService: LogoutService, private tokenChecker: TokenCheckerService, public apiService: ApiService, public alertService: AlertService) {
     this.tokenChecker.redirectToLoginIfExpired();
   }
 
   logout() {
-    this.logoutService.logout();
+    this.apiService.logout().subscribe(
+      (response) => {
+        if (response.code == 0) {
+          this.logoutService.logout();
+        } else {
+          this.alertService.show('error', 'There was an error while logging out');
+        }
+        // console.log(this.avaterInformation)
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   ngOnInit() {
